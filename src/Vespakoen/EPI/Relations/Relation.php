@@ -18,7 +18,7 @@ class Relation {
 
 	protected function getAliased($table)
 	{
-		return 'alias_'.$table;
+		return str_repeat('alias_', $this->countParents()).$table;
 	}
 
 }

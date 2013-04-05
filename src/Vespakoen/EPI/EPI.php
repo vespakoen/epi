@@ -43,6 +43,7 @@ class EPI {
 		$this->applyEagerLoads();
 		$this->applyJoins();
 		$this->applyFilters();
+		$this->applySorters();
 		$this->applyRestrictions();
 
 		return $this->query->get();
@@ -107,7 +108,7 @@ class EPI {
 				}
 			}
 
-			if($skip)
+			if($skip || empty($relationIdentifier))
 			{
 				continue;
 			}
@@ -143,14 +144,52 @@ class EPI {
 	protected function applyFilters()
 	{
 		$relations = $this->getRelations();
-		foreach (Input::get('filter', array()) as $filter => $value)
+		
+		$rawFilters = Input::get('filter', array());
+		foreach ($rawFilters as $rawFilter => $value)
 		{
-			$parts = explode('.', $filter);
+			$parts = explode('.', $rawFilter);
 			$column = array_pop($parts);
 			$relationIdentifier = implode('.', $parts);
-			$relation = $relations[$relationIdentifier];
+			if( ! empty($relationIdentifier))
+			{
+				$relation = $relations[$relationIdentifier];
+				$table = $relation->getTable();
+			}
+			else
+			{
+				$table = $this->model->getTable();
+			}
 
-			$this->query->where($relation->getTable().'.'.$column, '=', $value);
+			$this->query->where($table.'.'.$column, '=', $value);
+		}
+	}
+
+	protected function applySorters()
+	{
+		$relations = $this->getRelations();
+		$rawSorters = Input::get('sort', array());
+		foreach ($rawSorters as $rawSorter => $order)
+		{
+			if(empty($order))
+			{
+				$order = 'ASC';
+			}
+
+			$parts = explode('.', $rawSorters);
+			$column = array_pop($parts);
+			$relationIdentifier = implode('.', $parts);
+			if( ! empty($relationIdentifier))
+			{
+				$relation = $relations[$relationIdentifier];
+				$table = $relation->getTable();
+			}
+			else
+			{
+				$table = $this->model->getTable();
+			}
+
+			$this->query->orderBy($table.'.'.$column, $order);
 		}
 	}
 
@@ -158,6 +197,31 @@ class EPI {
 	{
 		$this->query->distinct();
 		$this->query->select($this->model->getTable().'.*');
+
+		if(Input::has('offset'))
+		{
+			$offset = Input::get('offset');
+			$this->query->skip($offset);
+		}
+
+		if(Input::has('limit'))
+		{
+			$limit = Input::get('limit');
+			$this->query->take($limit);
+		}
+
+		if(Input::has('page'))
+		{
+			$perPage = Input::get('perpage', 25);
+			$page = Input::get('page');
+			$this->query->skip($page);
+		}
+
+		if(Input::has('perpage'))
+		{
+			$perPage = Input::get('perpage');
+			$this->query->take($perPage);
+		}
 	}
 
 	protected function getRelationsByIdentifier($relationIdentifier)

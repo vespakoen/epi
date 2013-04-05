@@ -16,7 +16,7 @@ class BelongsToMany extends Relation {
 
 	public function applyJoin($query)
 	{
-		$firstTable = is_null($this->parent) ? $this->table : $this->getAliased($this->table);
+		$firstTable = is_null($this->parent) ? $this->table : $this->parent->getAliased($this->table);
 		$first = $firstTable.'.'.$this->key;
 		$secondTable = $this->getAliased($this->intermediateTable);
 		$second = $secondTable.'.'.$this->intermediateKey;
