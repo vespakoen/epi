@@ -11,9 +11,7 @@ class EPI {
 
 	public $eagerLoad = array();
 
-	public $joinedTables = array();
-
-	public $relations = array();
+	public $select = array();
 
 	public function __construct($model)
 	{
@@ -45,7 +43,7 @@ class EPI {
 		$this->applyFilters();
 		$this->applySorters();
 		$this->applyRestrictions();
-
+		
 		return $this->query->get();
 	}
 
@@ -65,18 +63,52 @@ class EPI {
 			$column = array_pop($parts);
 			$identifier = implode('.', $parts);
 
-			$filters[$identifier] = $column;
+			$filters[$identifier] = array(
+				$column,
+				$value
+			);
 		}
 
 		return $filters;
 	}
 
+	protected function getSorters()
+	{
+		$rawSorters = Input::get('sort', array());
+
+		$sorters = array();
+		foreach ($rawSorters as $rawSorter => $order)
+		{
+			if(empty($order))
+			{
+				$order = 'ASC';
+			}
+
+			$parts = explode('.', $rawSorter);
+			$column = array_pop($parts);
+			$identifier = implode('.', $parts);
+
+			$sorters[$identifier] = array(
+				$column,
+				$order
+			);
+		}
+
+		return $sorters;
+	}
+
 	protected function getRelationIdentifiers()
 	{
 		$filters = $this->getFilters();
+		$sorters = $this->getSorters();
 
 		$relationIdentifiers = array();
-		foreach ($filters as $identifier => $column)
+		foreach ($filters as $identifier => $info)
+		{
+			$relationIdentifiers[] = $identifier;
+		}
+
+		foreach ($sorters as $identifier => $info)
 		{
 			$relationIdentifiers[] = $identifier;
 		}
@@ -161,13 +193,23 @@ class EPI {
 				$table = $this->model->getTable();
 			}
 
-			$this->query->where($table.'.'.$column, '=', $value);
+			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+			{
+				$operator = 'LIKE';
+			}
+			else
+			{
+				$operator = '=';
+			}
+
+			$this->query->where($table.'.'.$column, $operator, $value);
 		}
 	}
 
 	protected function applySorters()
 	{
 		$relations = $this->getRelations();
+
 		$rawSorters = Input::get('sort', array());
 		foreach ($rawSorters as $rawSorter => $order)
 		{
@@ -176,7 +218,7 @@ class EPI {
 				$order = 'ASC';
 			}
 
-			$parts = explode('.', $rawSorters);
+			$parts = explode('.', $rawSorter);
 			$column = array_pop($parts);
 			$relationIdentifier = implode('.', $parts);
 			if( ! empty($relationIdentifier))
@@ -189,6 +231,7 @@ class EPI {
 				$table = $this->model->getTable();
 			}
 
+			$this->select[] = $table.'.'.$column.' AS sort_'.$column;
 			$this->query->orderBy($table.'.'.$column, $order);
 		}
 	}
@@ -196,7 +239,7 @@ class EPI {
 	protected function applyRestrictions()
 	{
 		$this->query->distinct();
-		$this->query->select($this->model->getTable().'.*');
+		$this->query->select(array_merge($this->select, array($this->model->getTable().'.*')));
 
 		if(Input::has('offset'))
 		{
