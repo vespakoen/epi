@@ -22,6 +22,20 @@ class EPIController extends Controller {
 	{
 		$this->fire('before.index');
 
+		$validator = Validator::make(Input::all(), $this->indexRules);
+		if($validator->fails())
+		{
+			$errors = $validator->messages()
+				->getMessages();
+
+			$response = Response::json(array(
+				'message' => 'Validation failed',
+				'errors' => $errors
+			), 422);
+
+			return $this->respond($response);
+		}
+
 		$results = EPI::modelInstance($this->model)
 			->with($this->eagerLoad)
 			->get();
@@ -50,7 +64,6 @@ class EPIController extends Controller {
 		}
 
 		$validator = Validator::make($input, $this->storeRules);
-
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -135,7 +148,6 @@ class EPIController extends Controller {
 		}
 
 		$validator = Validator::make($input, $this->updateRules);
-
 		if($validator->fails())
 		{
 			$errors = $validator->messages()

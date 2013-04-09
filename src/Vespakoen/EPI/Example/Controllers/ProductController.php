@@ -13,7 +13,16 @@ class ProductController extends EPIController {
 	);
 
 	/**
-	 * $storeRules Validation rules used when storing the product
+	 * $indexRules Validation rules used when getting a list of products
+	 * @var array
+	 */
+	public $indexRules = array(
+		'filter.type' => 'in:simple,configurable,grouped',
+		'filter.weight' => 'numeric'
+	);
+
+	/**
+	 * $storeRules Validation rules used when storing a product
 	 * @var array
 	 */
 	public $storeRules = array(
@@ -21,7 +30,7 @@ class ProductController extends EPIController {
 	);
 
 	/**
-	 * $storeRules Validation rules used when updating the product
+	 * $updateRules Validation rules used when updating a product
 	 * @var array
 	 */
 	public $updateRules = array(
