@@ -13,6 +13,15 @@ class EPI {
 
 	public $select = array();
 
+	/**
+	 * All of the available clause operators.
+	 *
+	 * @var array
+	 */
+	protected $operators = array(
+		'<=', '>=', '<>', '!=', '=', '<', '>'
+	);
+
 	public function __construct($model)
 	{
 		$this->model = $model;
@@ -56,12 +65,19 @@ class EPI {
 	{
 		$rawFilters = Input::get('filter', array());
 
+		$i = 0;
 		$filters = array();
 		foreach ($rawFilters as $rawFilter => $value)
 		{
 			$parts = explode('.', $rawFilter);
 			$column = array_pop($parts);
 			$identifier = implode('.', $parts);
+
+			if(empty($identifier))
+			{
+				$identifier = $i;
+				$i++;
+			}
 
 			$filters[$identifier] = array(
 				$column,
@@ -74,19 +90,27 @@ class EPI {
 
 	protected function getSorters()
 	{
-		$rawSorters = Input::get('sort', array());
+		$rawSorters = (array) Input::get('sort', array());
 
+		$i = 0;
 		$sorters = array();
 		foreach ($rawSorters as $rawSorter => $order)
 		{
-			if(empty($order))
+			if(is_int($rawSorter))
 			{
+				$rawSorter = $order;
 				$order = 'ASC';
 			}
 
 			$parts = explode('.', $rawSorter);
 			$column = array_pop($parts);
 			$identifier = implode('.', $parts);
+
+			if(empty($identifier))
+			{
+				$identifier = $i;
+				$i++;
+			}
 
 			$sorters[$identifier] = array(
 				$column,
@@ -105,11 +129,21 @@ class EPI {
 		$relationIdentifiers = array();
 		foreach ($filters as $identifier => $info)
 		{
+			if(is_int($identifier))
+			{
+				continue;
+			}
+
 			$relationIdentifiers[] = $identifier;
 		}
 
 		foreach ($sorters as $identifier => $info)
 		{
+			if(is_int($identifier))
+			{
+				continue;
+			}
+
 			$relationIdentifiers[] = $identifier;
 		}
 
@@ -176,14 +210,13 @@ class EPI {
 	protected function applyFilters()
 	{
 		$relations = $this->getRelations();
-		
-		$rawFilters = Input::get('filter', array());
-		foreach ($rawFilters as $rawFilter => $value)
+
+		$filters = $this->getFilters();
+		foreach ($filters as $relationIdentifier => $info)
 		{
-			$parts = explode('.', $rawFilter);
-			$column = array_pop($parts);
-			$relationIdentifier = implode('.', $parts);
-			if( ! empty($relationIdentifier))
+			list($column, $value) = $info;
+
+			if( ! is_int($relationIdentifier))
 			{
 				$relation = $relations[$relationIdentifier];
 				$table = $relation->getTable();
@@ -196,6 +229,18 @@ class EPI {
 			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
 			{
 				$operator = 'LIKE';
+			}
+			elseif(Str::startsWith($value, $this->operators))
+			{
+				foreach ($this->operators as $operator)
+				{
+					if(Str::startsWith($value, $operator))
+					{
+						break;
+					}
+				}
+
+				$value = substr($value, strlen($operator));
 			}
 			else
 			{
@@ -210,18 +255,12 @@ class EPI {
 	{
 		$relations = $this->getRelations();
 
-		$rawSorters = Input::get('sort', array());
-		foreach ($rawSorters as $rawSorter => $order)
+		$sorters = $this->getSorters();
+		foreach ($sorters as $relationIdentifier => $info)
 		{
-			if(empty($order))
-			{
-				$order = 'ASC';
-			}
+			list($column, $order) = $info;
 
-			$parts = explode('.', $rawSorter);
-			$column = array_pop($parts);
-			$relationIdentifier = implode('.', $parts);
-			if( ! empty($relationIdentifier))
+			if( ! is_int($relationIdentifier))
 			{
 				$relation = $relations[$relationIdentifier];
 				$table = $relation->getTable();
@@ -232,6 +271,7 @@ class EPI {
 			}
 
 			$this->select[] = $table.'.'.$column.' AS sort_'.$column;
+			
 			$this->query->orderBy($table.'.'.$column, $order);
 		}
 	}
