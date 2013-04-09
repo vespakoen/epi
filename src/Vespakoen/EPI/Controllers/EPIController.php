@@ -1,5 +1,8 @@
 <?php namespace Vespakoen\EPI\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+
 use Controller;
 use Vespakoen\EPI\EPI;
 
@@ -201,7 +204,12 @@ class EPIController extends Controller {
 	{
 		if(Input::has('prettyprint'))
 		{
-			$result = json_encode($result->toArray(), JSON_PRETTY_PRINT);
+			if($result instanceof Model || $result instanceof Collection)
+			{
+				$result = $result->toArray();
+			}
+
+			$result = json_encode($result, JSON_PRETTY_PRINT);
 		}
 
 		return $result;
