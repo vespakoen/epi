@@ -1,6 +1,7 @@
 <?php namespace Vespakoen\EPI;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class EPIServiceProvider extends ServiceProvider {
 
@@ -28,7 +29,7 @@ class EPIServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		Route::resource('epi/product', 'Vespakoen\EPI\Example\Controllers\ProductController');
 	}
 
 	/**
