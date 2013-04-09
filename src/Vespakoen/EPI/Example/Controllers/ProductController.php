@@ -35,10 +35,33 @@ class ProductController extends EPIController {
 	public function __construct(Product $model)
 	{
 		$this->model = $model;
+
+		// We can bind to EPI specific events
+		Event::listen('after.update', function($modelName, $id, $model, $input)
+		{
+			
+		});
+
+		// We can bind to EPI specific events for a certain model
+		Event::listen('after.update: Vespakoen\EPI\Example\Models\Product', function($id, $model, $input)
+		{
+			
+		});
 	}
 
 	/**
-	 * You can override the methods if you like
+	 * We can override a method to add, for example, authorisation
 	 */
+	public function update($id)
+	{
+		if(Authority::cannot('update', 'product', $id))
+		{
+			return Response::json(array(
+				'message' => 'You are not allowed to update this product'
+			), 401);
+		}
+
+		parent::update($id);
+	}
 
 }
