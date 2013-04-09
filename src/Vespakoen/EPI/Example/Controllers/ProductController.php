@@ -37,11 +37,6 @@ class ProductController extends EPIController {
 		$this->model = $model;
 	}
 
-	public function initialize()
-	{
-		
-	}
-
 	/**
 	 * You can override the methods if you like
 	 */
