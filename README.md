@@ -53,21 +53,43 @@ you can use the following code:
 After you have setup a controller, and registered it with the router (see: `vendor/vespakoen/epi/src/Vespakoen/EPI/EPIServiceProvider.php`)
 You can easily view the result of the `index` and `show` method in your browser (they are the only GET requests)
 
-For the index method (`domain.com/api/product`)
+
+For the index method (`GET /api/product`), EPI is used, below is a list of it's functionality:
+
 
 You can add your filters like this:
+
 ?filter[relation1.relation2.column]=value
+
 ?filter[categories.translation.slug]=product-name
 
+
 You can sort like this:
+
 ?sort[relation1.relation2.column]=ASC/DESC
+
 ?sort[categories.translation.slug]=DESC
+
 ?sort=categories.translation.slug (will default to ASC)
 
+
 You can limit like this:
+
 ?offset=10&limit=25
 
+
 or this:
+
 ?page=1&perpage=25
+
+
+Supported URL's for EPIController are (depends on how they are routed):
+
+`GET /resource`
+`GET /resource/{id}`
+`POST /resource`
+`PUT /resource/{id}`
+`DELETE /resource/{id}`
+
 
 # Enjoy!
