@@ -14,6 +14,27 @@ use Illuminate\Support\Facades\Response;
 class EPIController extends Controller {
 
 	/**
+	 * $indexRules Validation rules used when getting a list of resources
+	 * 
+	 * @var array
+	 */
+	public $indexRules = array();
+
+	/**
+	 * $storeRules Validation rules used when storing a resource
+	 * 
+	 * @var array
+	 */
+	public $storeRules = array();
+
+	/**
+	 * $updateRules Validation rules used when updating a resource
+	 * 
+	 * @var array
+	 */
+	public $updateRules = array();
+
+	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
@@ -202,6 +223,13 @@ class EPIController extends Controller {
 		return Response::json(null, 204);
 	}
 
+	/**
+	 * Helper for firing 2 events, with a different name and arguments
+	 * 
+	 * @param  string $event     The name of the event to fire
+	 * @param  array  $arguments The arguments for the event
+	 * @return Void
+	 */
 	protected function fire($event, $arguments = array())
 	{
 		$model = get_class($this->model);
@@ -212,6 +240,12 @@ class EPIController extends Controller {
 		Event::fire($event, $arguments);
 	}
 
+	/**
+	 * Helper for prettyprinting the response
+	 * 
+	 * @param  result The eloquent collection or model
+	 * @return string The JSON
+	 */
 	protected function respond($result)
 	{
 		if(Input::has('prettyprint'))
