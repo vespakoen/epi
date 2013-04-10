@@ -17,13 +17,6 @@ class EPI {
 	public $eagerLoad = array();
 
 	/**
-	 * The columns to load
-	 * 
-	 * @var array
-	 */
-	private $select = array();
-
-	/**
 	 * All of the available clause operators.
 	 *
 	 * @var array
@@ -31,6 +24,20 @@ class EPI {
 	protected $operators = array(
 		'<=', '>=', '<>', '!=', '=', '<', '>'
 	);
+
+	/**
+	 * The columns to load
+	 * 
+	 * @var array
+	 */
+	private $select = array();
+
+	/**
+	 * Relations cache
+	 * 
+	 * @var array
+	 */
+	private $relations = array();
 
 	/**
 	 * Create a new EPI instance
@@ -320,6 +327,12 @@ class EPI {
 	 */
 	protected function getRelations()
 	{
+		// In case the relations have already been loaded, return the cached version
+		if($this->relations)
+		{
+			return $this->relations;
+		}
+
 		$relationIdentifiersToLoad = $this->getRelationIdentifiersToLoad();
 
 		$relations = array();
@@ -327,6 +340,9 @@ class EPI {
 		{
 			$relations += $this->getRelationsByIdentifier($relationIdentifier);
 		}
+
+		// Cache the relations
+		$this->relations = $relations;
 
 		return $relations;
 	}
