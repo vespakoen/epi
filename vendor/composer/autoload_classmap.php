@@ -6,4 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'CreateProductsTable' => $baseDir . '/src/migrations/2013_03_12_221321_create_products_table.php',
 );

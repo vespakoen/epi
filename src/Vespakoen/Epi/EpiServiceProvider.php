@@ -1,9 +1,9 @@
-<?php namespace Vespakoen\EPI;
+<?php namespace Vespakoen\Epi;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
-class EPIServiceProvider extends ServiceProvider {
+class EpiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -29,7 +29,7 @@ class EPIServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		Route::resource('epi/product', 'Vespakoen\EPI\Example\Controllers\ProductController');
+		Route::resource('epi/product', 'Vespakoen\Epi\Example\Controllers\ProductController');
 	}
 
 	/**

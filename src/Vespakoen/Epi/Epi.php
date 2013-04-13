@@ -1,20 +1,21 @@
-<?php namespace Vespakoen\EPI;
+<?php namespace Vespakoen\Epi;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Str;
 
-use Vespakoen\EPI\Relations\BelongsToMany;
-use Vespakoen\EPI\Relations\HasOne;
-use Vespakoen\EPI\Relations\HasMany;
+use Vespakoen\Epi\Relations\BelongsToMany;
+use Vespakoen\Epi\Relations\HasOne;
+use Vespakoen\Epi\Relations\HasMany;
 
-class EPI {
+class Epi {
 
 	/**
 	 * The relationships to eagerload
-	 * 
+	 *
 	 * @var array
 	 */
-	public $eagerLoad = array();
+	public $eagerLoad;
 
 	/**
 	 * All of the available clause operators.
@@ -26,33 +27,41 @@ class EPI {
 	);
 
 	/**
+	 * $config the configuration
+	 *
+	 * @var array
+	 */
+	protected $config;
+
+	/**
 	 * The columns to load
-	 * 
+	 *
 	 * @var array
 	 */
 	private $select = array();
 
 	/**
 	 * Relations cache
-	 * 
+	 *
 	 * @var array
 	 */
-	private $relations = array();
+	private $relations;
 
 	/**
-	 * Create a new EPI instance
-	 * 
+	 * Create a new Epi instance
+	 *
 	 * @param Illuminate\Database\Eloquent\Model $model The Eloquent model
 	 */
 	public function __construct($model)
 	{
 		$this->model = $model;
 		$this->query = $this->model->newQuery();
+		$this->config = Config::get('epi::epi');
 	}
 
 	/**
-	 * Create a new EPI instance statically
-	 * 
+	 * Create a new Epi instance statically
+	 *
 	 * @param string $model An Eloquent model's name (including namespace)
 	 */
 	public static function model($model)
@@ -61,8 +70,8 @@ class EPI {
 	}
 
 	/**
-	 * Create a new EPI instance statically
-	 * 
+	 * Create a new Epi instance statically
+	 *
 	 * @param Illuminate\Database\Eloquent\Model $model An Eloquent model instance
 	 */
 	public static function modelInstance($model)
@@ -72,9 +81,9 @@ class EPI {
 
 	/**
 	 * Eagerload relationships
-	 * 
+	 *
 	 * @param  array $relations The relation identifiers to load
-	 * @return Vespakoen\EPI\EPI
+	 * @return Vespakoen\Epi\Epi
 	 */
 	public function with($relations)
 	{
@@ -85,7 +94,7 @@ class EPI {
 
 	/**
 	 * Get the results
-	 * 
+	 *
 	 * @return Illuminate\Database\Eloquent\Collection
 	 */
 	public function get()
@@ -95,14 +104,14 @@ class EPI {
 		$this->applyFilters();
 		$this->applySorters();
 		$this->applyRestrictions();
-		
+
 		return $this->query->get();
 	}
 
 	/**
 	 * Apply the eagerloads to the query
-	 * 
-	 * @return Vespakoen\EPI\EPI
+	 *
+	 * @return Vespakoen\Epi\Epi
 	 */
 	protected function applyEagerLoads()
 	{
@@ -111,7 +120,7 @@ class EPI {
 
 	/**
 	 * Turn filters input into standardized array
-	 * 
+	 *
 	 * @return array the filters
 	 */
 	protected function getFilters()
@@ -143,9 +152,9 @@ class EPI {
 
 	/**
 	 * Turn sorters input into standardized array
-	 * 
+	 *
 	 * @return array the sorters
-	 */	
+	 */
 	protected function getSorters()
 	{
 		$rawSorters = (array) Input::get('sort', array());
@@ -182,7 +191,7 @@ class EPI {
 
 	/**
 	 * Collect the relationships that have to be joined to allow filtering and sorting
-	 * 
+	 *
 	 * @return array The relationidentifiers
 	 */
 	protected function getRelationIdentifiers()
@@ -218,7 +227,7 @@ class EPI {
 	 * Filter the relationships that are already part of another relation
 	 * For example "categories" will not get added in
 	 * case "categories.translation" is already present.
-	 * 
+	 *
 	 * @return array The relationidentifiers to load
 	 */
 	protected function getRelationIdentifiersToLoad()
@@ -258,7 +267,7 @@ class EPI {
 
 	/**
 	 * Get information about a relationship by a identifier
-	 * 
+	 *
 	 * @param  string $relationIdentifier The relation identifier (ex: categories.translation)
 	 * @return array the relationships
 	 */
@@ -267,7 +276,7 @@ class EPI {
 		$parent = null;
 		$partialRelationIdentifier = '';
 		$relationSegments = explode('.', $relationIdentifier);
-		
+
 		$relations = array();
 		foreach ($relationSegments as $i => $relationSegment)
 		{
@@ -311,10 +320,10 @@ class EPI {
 
 			$lastEloquentRelation = $eloquentRelation;
 			$parent = $relation;
-			
+
 			$partialRelationIdentifier .= (($i === 0) ? '' : '.').$relationSegment;
 
-			$relations[$partialRelationIdentifier] = $relation;	
+			$relations[$partialRelationIdentifier] = $relation;
 		}
 
 		return $relations;
@@ -322,7 +331,7 @@ class EPI {
 
 	/**
 	 * Load information about relationships that are needed for joins and filters
-	 * 
+	 *
 	 * @return array The relations
 	 */
 	protected function getRelations()
@@ -349,7 +358,7 @@ class EPI {
 
 	/**
 	 * Apply joins to the query
-	 * 
+	 *
 	 * @return Void
 	 */
 	protected function applyJoins()
@@ -363,7 +372,7 @@ class EPI {
 
 	/**
 	 * Apply filters to the query
-	 * 
+	 *
 	 * @return Void
 	 */
 	protected function applyFilters()
@@ -412,7 +421,7 @@ class EPI {
 
 	/**
 	 * Apply sorters to the query
-	 * 
+	 *
 	 * @return Void
 	 */
 	protected function applySorters()
@@ -435,14 +444,14 @@ class EPI {
 			}
 
 			$this->select[] = $table.'.'.$column.' AS sort_'.$column;
-			
+
 			$this->query->orderBy($table.'.'.$column, $order);
 		}
 	}
 
 	/**
 	 * Apply restrictions to the query
-	 * 
+	 *
 	 * @return Void
 	 */
 	protected function applyRestrictions()

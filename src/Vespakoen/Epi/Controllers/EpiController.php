@@ -1,35 +1,35 @@
-<?php namespace Vespakoen\EPI\Controllers;
+<?php namespace Vespakoen\Epi\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 
 use Controller;
-use Vespakoen\EPI\EPI;
+use Vespakoen\Epi\Epi;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Response;
 
-class EPIController extends Controller {
+class EpiController extends Controller {
 
 	/**
 	 * $indexRules Validation rules used when getting a list of resources
-	 * 
+	 *
 	 * @var array
 	 */
 	public $indexRules = array();
 
 	/**
 	 * $storeRules Validation rules used when storing a resource
-	 * 
+	 *
 	 * @var array
 	 */
 	public $storeRules = array();
 
 	/**
 	 * $updateRules Validation rules used when updating a resource
-	 * 
+	 *
 	 * @var array
 	 */
 	public $updateRules = array();
@@ -57,7 +57,7 @@ class EPIController extends Controller {
 			return $this->respond($response);
 		}
 
-		$results = EPI::modelInstance($this->model)
+		$results = Epi::modelInstance($this->model)
 			->with($this->eagerLoad)
 			->get();
 
@@ -75,7 +75,7 @@ class EPIController extends Controller {
 	{
 		$this->fire('before.store');
 
-		if( ! $input = Input::json())
+		if( ! $input = Input::all())
 		{
 			$response = Response::json(array(
 				'message' => 'Problems reading input'
@@ -107,7 +107,7 @@ class EPIController extends Controller {
 			return $this->respond($response);
 		}
 
-		$this->fire('after.store', array($id, $model, $input));
+		$this->fire('after.store', array($model, $input));
 
 		return $this->respond($model);
 	}
@@ -159,7 +159,7 @@ class EPIController extends Controller {
 			return $this->respond($response);
 		}
 
-		if( ! $input = Input::json())
+		if( ! $input = Input::all())
 		{
 			$response = Response::json(array(
 				'message' => 'Problems reading input'
@@ -182,7 +182,7 @@ class EPIController extends Controller {
 			return $this->respond($response);
 		}
 
-		if( ! $this->model->create($input))
+		if( ! $model->fill($input)->save())
 		{
 			$response = Response::json(array(
 				'message' => 'Something went wrong, please try it again later'
@@ -206,7 +206,7 @@ class EPIController extends Controller {
 		$this->fire('before.destroy', array($id));
 
 		$model = $this->model->find($id);
-		
+
 		if( ! $model)
 		{
 			$response = Response::json(array(
@@ -225,7 +225,7 @@ class EPIController extends Controller {
 
 	/**
 	 * Helper for firing 2 events, with a different name and arguments
-	 * 
+	 *
 	 * @param  string $event     The name of the event to fire
 	 * @param  array  $arguments The arguments for the event
 	 * @return Void
@@ -242,7 +242,7 @@ class EPIController extends Controller {
 
 	/**
 	 * Helper for prettyprinting the response
-	 * 
+	 *
 	 * @param  result The eloquent collection or model
 	 * @return string The JSON
 	 */

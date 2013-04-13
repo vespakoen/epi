@@ -1,4 +1,4 @@
-<?php namespace Vespakoen\EPI\Relations;
+<?php namespace Vespakoen\Epi\Relations;
 
 class Relation {
 

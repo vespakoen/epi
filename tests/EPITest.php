@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Input;
 
-use Vespakoen\EPI\EPI;
+use Vespakoen\Epi\Epi;
 
-class EPITest extends PHPUnit_Framework_TestCase {
+class EpiTest extends PHPUnit_Framework_TestCase {
 
 	public function tearDown()
 	{
@@ -31,7 +31,7 @@ class EPITest extends PHPUnit_Framework_TestCase {
 
 		Input::shouldReceive('fefe');
 
-		$epi = EPI::modelInstance($modelMock)
+		$epi = Epi::modelInstance($modelMock)
 			->with(array('something'))
 			->get();
 	}

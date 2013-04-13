@@ -17,7 +17,7 @@
             "src/migrations"
         ],
         "psr-0": {
-            "Vespakoen\\EPI": "src/"
+            "Vespakoen\\Epi": "src/"
         }
     },
     "minimum-stability": "dev"

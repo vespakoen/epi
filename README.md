@@ -1,4 +1,4 @@
-# EPI - The API builder for Eloquent
+# Epi - The API builder for Eloquent
 
 ## BIG FAT WARNING
 
@@ -11,7 +11,7 @@ This has to do with the aliasing, a fix is on the way.
 ## Why did you make this?
 
 Building an API is a tedious task, especially the index methods.
-EPI is here to help.
+Epi is here to help.
 
 
 ## What does it do?
@@ -26,35 +26,35 @@ If you need something sub-standard, just override that method with your own code
 
 ## How to make it work
 
-First, you have to add the EPI package's service provider to the `providers` array
+First, you have to add the Epi package's service provider to the `providers` array
 in your `app/config/app.php` file.
-The name of the service to add is `Vespakoen\EPI\EPIServiceProvider`.
+The name of the service to add is `Vespakoen\Epi\EpiServiceProvider`.
 
-Now create a controller that extends from `Vespakoen\EPI\Controllers\EPIController`,
-You can checkout the example controller in `vendor/vespakoen/epi/src/Vespakoen/EPI/Example/Controllers/ProductController.php`
+Now create a controller that extends from `Vespakoen\Epi\Controllers\EpiController`,
+You can checkout the example controller in `vendor/vespakoen/epi/src/Vespakoen/Epi/Example/Controllers/ProductController.php`
 
 If you don't want to use the provided controller, and just want to use the filtering / sorting / limiting functionality,
 you can use the following code:
 
 ```php
-	$results = EPI::modelInstance(new Product)
+	$results = Epi::modelInstance(new Product)
 		->with(array('stuff', 'to.eagerload'))
 		->get();
 
 	// or
 
-	$results = EPI::model('Product')
+	$results = Epi::model('Product')
 		->with(array('stuff', 'to.eagerload'))
 		->get();
 ```
 
 ## How to use it
 
-After you have setup a controller, and registered it with the router (see: `vendor/vespakoen/epi/src/Vespakoen/EPI/EPIServiceProvider.php`)
+After you have setup a controller, and registered it with the router (see: `vendor/vespakoen/epi/src/Vespakoen/Epi/EpiServiceProvider.php`)
 You can easily view the result of the `index` and `show` method in your browser (they are the only GET requests)
 
 
-For the index method (`GET /api/product`), EPI is used, below is a list of it's functionality:
+For the index method (`GET /api/product`), Epi is used, below is a list of it's functionality:
 
 
 You can add your filters like this:
@@ -83,7 +83,7 @@ or this:
 ?page=1&perpage=25
 
 
-Supported URL's for EPIController are (depends on how they are routed):
+Supported URL's for EpiController are (depends on how they are routed):
 
 `GET /resource`
 `GET /resource/{id}`

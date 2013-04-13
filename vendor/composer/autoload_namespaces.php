@@ -6,7 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Vespakoen\\EPI' => $baseDir . '/src/',
+    'Vespakoen\\Epi' => $baseDir . '/src/',
     'Mockery' => $vendorDir . '/mockery/mockery/library/',
     'Illuminate\\Support' => $vendorDir . '/illuminate/support/',
 );

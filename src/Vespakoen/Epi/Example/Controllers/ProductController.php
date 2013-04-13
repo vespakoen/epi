@@ -1,9 +1,9 @@
-<?php namespace Vespakoen\EPI\Example\Controllers;
+<?php namespace Vespakoen\Epi\Example\Controllers;
 
-use Vespakoen\EPI\Controllers\EPIController;
-use Vespakoen\EPI\Example\Models\Product;
+use Vespakoen\Epi\Controllers\EpiController;
+use Vespakoen\Epi\Example\Models\Product;
 
-class ProductController extends EPIController {
+class ProductController extends EpiController {
 
 	/**
 	 * $eagerLoad == ->with(array('relation', 's'))
@@ -45,14 +45,14 @@ class ProductController extends EPIController {
 	{
 		$this->model = $model;
 
-		// We can bind to EPI specific events
+		// We can bind to Epi specific events
 		Event::listen('after.update', function($modelName, $id, $model, $input)
 		{
 			
 		});
 
-		// We can bind to EPI specific events for a certain model
-		Event::listen('after.update: Vespakoen\EPI\Example\Models\Product', function($id, $model, $input)
+		// We can bind to Epi specific events for a certain model
+		Event::listen('after.update: Vespakoen\Epi\Example\Models\Product', function($id, $model, $input)
 		{
 			
 		});
