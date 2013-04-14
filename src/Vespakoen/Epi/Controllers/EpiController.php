@@ -43,7 +43,7 @@ class EpiController extends Controller {
 	{
 		$this->fire('before.index');
 
-		$validator = Validator::make(Input::all(), $this->indexRules);
+		$validator = Validator::make(Epi::getCleanInput(), $this->indexRules);
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -61,6 +61,7 @@ class EpiController extends Controller {
 			->with($this->eagerLoad)
 			->get();
 
+		file_put_contents('/home/koen/debug', $this->respond($results));
 		$this->fire('after.index', array($results));
 
 		return $this->respond($results);
@@ -255,7 +256,7 @@ class EpiController extends Controller {
 				$result = $result->toArray();
 			}
 
-			$result = json_encode($result, JSON_PRETTY_PRINT);
+			$result = Response::make(json_encode($result, JSON_PRETTY_PRINT), 200, array('content-type' => 'application/json'));
 		}
 
 		return $result;

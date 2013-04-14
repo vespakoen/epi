@@ -49,6 +49,12 @@ class Api {
 	protected $config;
 
 	/**
+	 * $input input to passthrough
+	 * @var array
+	 */
+	protected $input;
+
+	/**
 	 * All of the available clause operators.
 	 *
 	 * @var array
@@ -171,8 +177,27 @@ class Api {
 		return $this->fastRequest($this->resource, 'GET', $input);
 	}
 
+	public function first()
+	{
+		$result = $this->take(1)->get();
+
+		return isset($result[0]) ? $result[0] : null;
+	}
+
+	public function passthrough()
+	{
+		$this->input = Input::all();
+
+		return $this;
+	}
+
 	protected function getInput()
 	{
+		if( ! is_null($this->input))
+		{
+			return $this->input;
+		}
+
 		$input = array();
 
 		if( ! is_null($this->wheres))
@@ -224,12 +249,13 @@ class Api {
 		{
 			if($method === 'GET')
 			{
-				$uri .= '?'.http_build_query($input);
+				$uri .= '?'.urldecode(http_build_query($input));
 			}
 
 			$client = new Client($this->config['domain']);
-			$request = $client->createRequest($method, $uri, array(), $input)
+			$request = $client->createRequest($method, $uri, array(), ($method === 'GET') ? array() : $input)
 				->addHeader('Content-Type', 'application/json');
+
 			try
 			{
 				$response = $request->send();

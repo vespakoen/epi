@@ -22,7 +22,7 @@ class Epi {
 	 *
 	 * @var array
 	 */
-	protected $operators = array(
+	protected static $operators = array(
 		'<=', '>=', '<>', '!=', '=', '<', '>'
 	);
 
@@ -106,6 +106,48 @@ class Epi {
 		$this->applyRestrictions();
 
 		return $this->query->get();
+	}
+
+	/**
+	 * Get clean input for validator
+	 *
+	 * This method removes the operators from the filters
+	 *
+	 * @param  $input $input The input
+	 * @return array  The clean input
+	 */
+	public static function getCleanInput()
+	{
+		$input = $oldInput = Input::all();
+
+		$operators = static::$operators;
+		$clean = function($value) use ($operators)
+		{
+			foreach($operators as $operator)
+			{
+				$operatorLength = strlen($operator);
+				if(substr($value, 0, $operatorLength) == $operator)
+				{
+					$value = substr($value, strlen($operator));
+					break;
+				}
+			}
+
+			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+			{
+				return trim($value, '%');
+			}
+
+			return $value;
+		};
+
+		$filters = Input::get('filter', array());
+		foreach ($filters as $key => $value)
+		{
+			$input['filter'][$key] = $clean($value);
+		}
+
+		return $input;
 	}
 
 	/**
@@ -398,9 +440,9 @@ class Epi {
 			{
 				$operator = 'LIKE';
 			}
-			elseif(Str::startsWith($value, $this->operators))
+			elseif(Str::startsWith($value, static::$operators))
 			{
-				foreach ($this->operators as $operator)
+				foreach (static::$operators as $operator)
 				{
 					if(Str::startsWith($value, $operator))
 					{
