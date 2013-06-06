@@ -14,6 +14,20 @@ use Illuminate\Support\Facades\Response;
 class EpiController extends Controller {
 
 	/**
+	 * $eagerLoad Relations to eagerload by default
+	 *
+	 * @var array
+	 */
+	public $eagerLoad = array();
+
+	/**
+	 * $htore Path to hstore columns for filtering support
+	 *
+	 * @var array
+	 */
+	public $hstore = array();
+
+	/**
 	 * $indexRules Validation rules used when getting a list of resources
 	 *
 	 * @var array
@@ -59,9 +73,9 @@ class EpiController extends Controller {
 
 		$results = Epi::modelInstance($this->model)
 			->with($this->eagerLoad)
+			->hstore($this->hstore)
 			->get();
 
-		file_put_contents('/home/koen/debug', $this->respond($results));
 		$this->fire('after.index', array($results));
 
 		return $this->respond($results);

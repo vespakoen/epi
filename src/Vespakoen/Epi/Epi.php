@@ -18,6 +18,13 @@ class Epi {
 	public $eagerLoad;
 
 	/**
+	 * $htore Path to hstore columns for filtering support
+	 *
+	 * @var array
+	 */
+	public $hstore = array();
+
+	/**
 	 * All of the available clause operators.
 	 *
 	 * @var array
@@ -92,6 +99,13 @@ class Epi {
 		return $this;
 	}
 
+	public function hstore($columns)
+	{
+		$this->hstore = $columns;
+
+		return $this;
+	}
+
 	/**
 	 * Get the results
 	 *
@@ -104,6 +118,12 @@ class Epi {
 		$this->applyFilters();
 		$this->applySorters();
 		$this->applyRestrictions();
+
+		if(Input::has('first'))
+		{
+			$this->query->take(1);
+			return $this->query->first();
+		}
 
 		return $this->query->get();
 	}
@@ -296,7 +316,7 @@ class Epi {
 				}
 			}
 
-			if($skip || empty($relationIdentifier))
+			if($skip || empty($relationIdentifier) || (isset($this->hstore) && in_array($relationIdentifier, $this->hstore)))
 			{
 				continue;
 			}
@@ -426,6 +446,17 @@ class Epi {
 		{
 			list($column, $value) = $info;
 
+			if(in_array($relationIdentifier, $this->hstore))
+			{
+				$parts = explode('.', $relationIdentifier);
+				$hstoreColumn = array_pop($parts);
+				$relationIdentifier = implode('.', $parts);
+				if(empty($relationIdentifier))
+				{
+					$relationIdentifier = 0;
+				}
+			}
+
 			if( ! is_int($relationIdentifier))
 			{
 				$relation = $relations[$relationIdentifier];
@@ -436,28 +467,36 @@ class Epi {
 				$table = $this->model->getTable();
 			}
 
-			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+			if(in_array($relationIdentifier, $this->hstore))
 			{
-				$operator = 'LIKE';
-			}
-			elseif(Str::startsWith($value, static::$operators))
-			{
-				foreach (static::$operators as $operator)
-				{
-					if(Str::startsWith($value, $operator))
-					{
-						break;
-					}
-				}
-
-				$value = substr($value, strlen($operator));
+				$operator = '@>';
+				$this->query->whereRaw($hstoreColumn.$operator."'".$column."=>".$value."'");
 			}
 			else
 			{
-				$operator = '=';
-			}
+				if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+				{
+					$operator = 'LIKE';
+				}
+				elseif(Str::startsWith($value, static::$operators))
+				{
+					foreach (static::$operators as $operator)
+					{
+						if(Str::startsWith($value, $operator))
+						{
+							break;
+						}
+					}
 
-			$this->query->where($table.'.'.$column, $operator, $value);
+					$value = substr($value, strlen($operator));
+				}
+				else
+				{
+					$operator = '=';
+				}
+
+				$this->query->where($table.'.'.$column, $operator, $value);
+			}
 		}
 	}
 
@@ -524,6 +563,11 @@ class Epi {
 		{
 			$perPage = Input::get('perpage');
 			$this->query->take($perPage);
+		}
+
+		if(Input::has('first'))
+		{
+			$this->query->take(1);
 		}
 	}
 
