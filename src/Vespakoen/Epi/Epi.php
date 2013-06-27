@@ -376,7 +376,14 @@ class Epi {
 					$relation = new HasOne($parent, $table, $key, $foreignTable, $foreignKey);
 				break;
 				case 'Illuminate\Database\Eloquent\Relations\HasMany':
+					$table = $eloquentRelation->getParent()->getTable();
+					$key = $eloquentRelation->getParent()->getKeyName();
 
+					$foreignTable = $eloquentRelation->getRelated()->getTable();
+					$parts = explode('.', $eloquentRelation->getForeignKey());
+					$foreignKey = array_pop($parts);
+
+					$relation = new HasMany($parent, $table, $key, $foreignTable, $foreignKey);
 				break;
 			}
 
