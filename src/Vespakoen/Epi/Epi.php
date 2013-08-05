@@ -385,6 +385,26 @@ class Epi {
 
 					$relation = new HasMany($parent, $table, $key, $foreignTable, $foreignKey);
 				break;
+				case 'Illuminate\Database\Eloquent\Relations\BelongsTo':
+					$table = $eloquentRelation->getParent()->getTable();
+					$key = $eloquentRelation->getParent()->getKeyName();
+					sdd($table, $key);
+					$foreignTable = $eloquentRelation->getRelated()->getTable();
+					$parts = explode('.', $eloquentRelation->getForeignKey());
+					$foreignKey = array_pop($parts);
+
+					$relation = new BelongsTo($parent, $table, $key, $foreignTable, $foreignKey);
+				break;
+				case 'Illuminate\Database\Eloquent\Relations\MorphMany':
+					$table = $eloquentRelation->getParent()->getTable();
+					$key = $eloquentRelation->getParent()->getKeyName();
+					sdd($table, $key);
+					$foreignTable = $eloquentRelation->getRelated()->getTable();
+					$parts = explode('.', $eloquentRelation->getForeignKey());
+					$foreignKey = array_pop($parts);
+
+					$relation = new MorphMany($parent, $table, $key, $foreignTable, $foreignKey);
+				break;
 			}
 
 			$lastEloquentRelation = $eloquentRelation;
