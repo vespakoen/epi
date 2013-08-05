@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 use Vespakoen\Epi\Relations\BelongsToMany;
 use Vespakoen\Epi\Relations\HasOne;
 use Vespakoen\Epi\Relations\HasMany;
+use Vespakoen\Epi\Relations\BelongsTo;
+use Vespakoen\Epi\Relations\MorphMany;
 
 class Epi {
 
@@ -387,23 +389,28 @@ class Epi {
 				break;
 				case 'Illuminate\Database\Eloquent\Relations\BelongsTo':
 					$table = $eloquentRelation->getParent()->getTable();
-					$key = $eloquentRelation->getParent()->getKeyName();
-					sdd($table, $key);
+					$key = $eloquentRelation->getForeignKey();
+
 					$foreignTable = $eloquentRelation->getRelated()->getTable();
-					$parts = explode('.', $eloquentRelation->getForeignKey());
-					$foreignKey = array_pop($parts);
+					$foreignKey = $eloquentRelation->getRelated()->getKeyName();
 
 					$relation = new BelongsTo($parent, $table, $key, $foreignTable, $foreignKey);
 				break;
 				case 'Illuminate\Database\Eloquent\Relations\MorphMany':
 					$table = $eloquentRelation->getParent()->getTable();
 					$key = $eloquentRelation->getParent()->getKeyName();
-					sdd($table, $key);
+
 					$foreignTable = $eloquentRelation->getRelated()->getTable();
+
 					$parts = explode('.', $eloquentRelation->getForeignKey());
 					$foreignKey = array_pop($parts);
 
-					$relation = new MorphMany($parent, $table, $key, $foreignTable, $foreignKey);
+					$parts = explode('.', $eloquentRelation->getMorphType());
+					$morphType = array_pop($parts);
+
+					$morphClass = $eloquentRelation->getMorphClass();
+
+					$relation = new MorphMany($parent, $table, $key, $foreignTable, $foreignKey, $morphType, $morphClass);
 				break;
 			}
 
