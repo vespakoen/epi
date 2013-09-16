@@ -179,7 +179,9 @@ class Epi {
 	 */
 	protected function applyEagerLoads()
 	{
-		$this->query->with($this->eagerLoad);
+		$eagerLoad = Input::has('with') ? array_merge($this->eagerLoad, Input::get('with', array())) : $this->eagerLoad;
+		
+		$this->query->with($eagerLoad);
 	}
 
 	/**
