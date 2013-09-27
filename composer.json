@@ -1,0 +1,20 @@
+{
+    "name": "vespakoen/epi",
+    "description": "",
+    "authors": [
+        {
+            "name": "Roj Vroemen",
+            "email": "roj.vroemen@azion.nl"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "psr-0": {
+            "Vespakoen\\Epi": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
