@@ -4,9 +4,9 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 interface RelationInterface {
 
-	public function __construct(RelationInterface $parent = null, Relation $relation);
+	public function make($parent = null, Relation $relation = null, $relationIdentifier);
 
-	public function applyJoins($query);
+	public function getJoins();
 
 	public function getTable();
 

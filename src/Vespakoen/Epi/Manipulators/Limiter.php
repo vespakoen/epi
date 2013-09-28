@@ -2,7 +2,7 @@
 
 use Vespakoen\Epi\Interfaces\Manipulators\LimiterInterface;
 
-class Limiter extends Manipulator implements LimiterInterface {
+class Limiter implements LimiterInterface {
 
 	public $skip;
 
@@ -12,6 +12,8 @@ class Limiter extends Manipulator implements LimiterInterface {
 	{
 		$this->skip = $skip;
 		$this->take = $take;
+
+		return $this;
 	}
 
 	public function applyTo($query)

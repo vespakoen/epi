@@ -2,12 +2,7 @@
 
 use Vespakoen\Epi\Interfaces\Extractors\LimiterExtractorInterface;
 
-class LimiterExtractor implements LimiterExtractorInterface {
-
-	public function __construct(array $config)
-	{
-		$this->config = $config;
-	}
+class LimiterExtractor extends Extractor implements LimiterExtractorInterface {
 
 	public function extract(array $input)
 	{

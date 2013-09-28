@@ -27,23 +27,9 @@ class Epi {
 		return $this;
 	}
 
-	public function setModel(Model $model)
-	{
-		$this->model = $model;
-
-		return $this;
-	}
-
 	public function getModel()
 	{
 		return $this->model;
-	}
-
-	public function setInput(array $input)
-	{
-		$this->input = $input;
-
-		return $this;
 	}
 
 	public function setEagerLoads($eagerLoads)
@@ -69,7 +55,8 @@ class Epi {
 
 	protected function getQuery()
 	{
-		$query = $this->model->with($this->eagerLoads);
+		$query = $this->model->newInstance()
+			->with($this->eagerLoads);
 
 		$manipulators = $this->getManipulators();
 		foreach($manipulators as $manipulator)

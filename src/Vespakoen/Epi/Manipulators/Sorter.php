@@ -1,9 +1,8 @@
 <?php namespace Vespakoen\Epi\Manipulators;
 
 use Vespakoen\Epi\Interfaces\Manipulators\SorterInterface;
-use Vespakoen\Epi\Helpers\SafeTableName;
 
-class Sorter extends Manipulator implements SorterInterface {
+class Sorter implements SorterInterface {
 
 	public $relationIdentifier;
 
@@ -11,18 +10,19 @@ class Sorter extends Manipulator implements SorterInterface {
 
 	public $direction;
 
-	public function make($relationIdentifier, $column, $direction)
+	public function make($relationIdentifier, $table, $column, $direction)
 	{
 		$this->relationIdentifier = $relationIdentifier;
+		$this->table = $table;
 		$this->column = $column;
 		$this->direction = $direction;
+
+		return $this;
 	}
 
 	public function applyTo($query)
 	{
-		$table = SafeTableName::getForRelationIdentifier($relation);
-
-		return $query->orderBy($table.'.'.$this->column, $this->direction);
+		return $query->orderBy($this->table.'.'.$this->column, $this->direction);
 	}
 
 	public function getRelationIdentifier()

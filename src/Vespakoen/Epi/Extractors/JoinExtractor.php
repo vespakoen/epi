@@ -2,25 +2,78 @@
 
 use Vespakoen\Epi\Interfaces\Extractors\JoinExtractorInterface;
 
-class JoinExtractor implements JoinExtractorInterface {
+use Illuminate\Support\Str;
 
-	public function __construct(array $config)
+class JoinExtractor extends Extractor implements JoinExtractorInterface {
+
+	public function __construct($safeTableName, $relationUnifier)
 	{
-		$this->config = $config;
+		$this->safeTableName = $safeTableName;
+		$this->relationUnifier = $relationUnifier;
 	}
 
 	public function extract(array $filters, array $sorters)
 	{
+		$manipulators = array_merge($filters, $sorters);
+
+		$uniqueRelationIdentifiers = $this->getUniqueRelationIdentifiersForManipulators($manipulators);
+
+		$relationIdentifiers = $this->getRelationIdentifiersToLoad($uniqueRelationIdentifiers);
+
+		$joins = array();
+		foreach($relationIdentifiers as $relationIdentifier)
+		{
+			$unifiedRelation = $this->relationUnifier->get($relationIdentifier);
+
+		 	$joins = array_merge($joins, $unifiedRelation->getJoins());
+		}
+
+		return $joins;
+	}
+
+	protected function getUniqueRelationIdentifiersForManipulators($manipulators)
+	{
 		$relationIdentifiers = array();
 
-		foreach(array_merge($filters, $sorters) as $manipulator)
+		foreach($manipulators as $manipulator)
 		{
 			$relationIdentifiers[] = $manipulator->getRelationIdentifier();
 		}
 
-		$relationIdentifiers = array_unique($relationIdentifiers);
+		return array_unique($relationIdentifiers);
+	}
 
-		return array();
+	protected function getRelationIdentifiersToLoad($relationIdentifiers)
+	{
+		$relationIdentifiersToLoad = array();
+		foreach ($relationIdentifiers as $relationIdentifier)
+		{
+			$skip = false;
+			foreach ($relationIdentifiersToLoad as $i => $relationIdentifierToLoad)
+			{
+				if(Str::startsWith($relationIdentifierToLoad, $relationIdentifier))
+				{
+					$skip = true;
+					break;
+				}
+
+				if(Str::startsWith($relationIdentifier, $relationIdentifierToLoad))
+				{
+					$relationIdentifiersToLoad[$i] = $relationIdentifier;
+					$skip = true;
+					break;
+				}
+			}
+
+			if($skip || empty($relationIdentifier))
+			{
+				continue;
+			}
+
+			$relationIdentifiersToLoad[] = $relationIdentifier;
+		}
+
+		return $relationIdentifiersToLoad;
 	}
 
 }

@@ -5,7 +5,7 @@ use Vespakoen\Epi\Interfaces\Extractors\FilterExtractorInterface;
 
 use Illuminate\Support\Str;
 
-class FilterExtractor implements FilterExtractorInterface {
+class FilterExtractor extends Extractor implements FilterExtractorInterface {
 
 	protected $operators = array(
 		'<=',
@@ -16,11 +16,6 @@ class FilterExtractor implements FilterExtractorInterface {
 		'<',
 		'>'
 	);
-
-	public function __construct(array $config)
-	{
-		$this->config = $config;
-	}
 
 	public function extract(array $input)
 	{
@@ -39,8 +34,9 @@ class FilterExtractor implements FilterExtractorInterface {
 		{
 			list($relationIdentifier, $column) = $this->extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn);
 			list($operator, $value) = $this->extractOperatorAndValue($rawOperatorAndValue);
+			$table = $this->getSafeAliasedTableName($relationIdentifier);
 
-			$filters[] = Filter::make($relationIdentifier, $column, $operator, $value);
+			$filters[] = Filter::make($relationIdentifier, $table, $column, $operator, $value);
 		}
 
 		return $filters;

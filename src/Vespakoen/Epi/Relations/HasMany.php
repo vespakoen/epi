@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class HasMany implements RelationInterface {
 
-	public function __construct(RelationInterface $parent = null, Relation $relation)
+	public function __construct(RelationInterface $parent = null, Relation $relation = null, $relationIdentifier)
 	{
 		$this->parent = $parent;
 		$this->relation = $relation;
+		$this->relationIdentifier = $relationIdentifier;
 	}
 
-	public function applyJoins($query)
+	public function getJoins()
 	{
-
+		dd($this);
 	}
 
 	public function getTable()

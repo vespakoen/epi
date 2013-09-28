@@ -4,27 +4,20 @@ use Vespakoen\Epi\Interfaces\RelationInterface;
 
 class SafeTableName {
 
-	public function __construct(RelationUnifier $relationUnifier)
+	public function __construct($relationUnifier)
 	{
-		$model = Epi::getModel();
-
-		$this->relationUnifier = $relationUnifier->make($model);
+		$this->relationUnifier = $relationUnifier;
 	}
 
-	public function getForRelation(RelationInterface $relation)
+	public function getForRelationIdentifier($relationIdentifier)
 	{
+		$relation = $this->relationUnifier->get($relationIdentifier);
+
 		$table = $relation->getTable();
 
 		$prefix = ltrim('safe_', str_repeat('safe_', count(explode('.', $relationIdentifier))));
 
 		return $prefix.$table;
-	}
-
-	public function getForRelationIdentifier($relationIdentifier)
-	{
-		$relation = $this->relationUnifier->getRelation($relationIdentifier);
-
-		return $this->getForRelation($relation);
 	}
 
 }

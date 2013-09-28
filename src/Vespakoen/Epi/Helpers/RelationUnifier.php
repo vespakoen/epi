@@ -6,28 +6,24 @@ class RelationUnifier {
 
 	protected $model;
 
-	protected $cached;
+	protected $cached = array();
 
-	public function __construct(Model $model)
+	public function __construct($app)
 	{
-		$this->model = $model;
+		$this->app = $app;
 	}
 
-	public function make($model)
+	public function unify($parent, $relation, $currentRelationIdentifier)
 	{
-		return new static($model);
-	}
+		// take the last part in the relationship class and cast it to lowercase
+		$parts = explode('\\', get_class($relation));
+		$relationKey = strtolower(end($parts));
 
-	public function unify($parent, $relation)
-	{
-		// take the last part in the relationship class
-		$relationClassName = end(explode('\\', get_class($relation)));
+		// get the unified relationship
+		$unifiedRelation = $this->app['epi::relations.'.$relationKey];
 
-		// get the name of the unified relationship
-		$unifiedRelationClassName = 'Vespakoen\\Epi\\Relations\\'.$relationClassName;
-
-		// return a new instance of it
-		return new $unifiedRelationClassName($parent, $relation);
+		// set some properties on it
+		return $unifiedRelation->make($parent, $relation, $currentRelationIdentifier);
 	}
 
 	/**
@@ -48,8 +44,9 @@ class RelationUnifier {
 		$relationNames = explode('.', $relationIdentifier);
 
 		// we need to set some values for the first run
-		$model = $this->model;
-		$lastRelation = null;
+		$model = $this->app['epi::epi']->getModel();
+
+		$lastRelation = $model;
 
 		// loop over the parts in the relationidentifier to extract the stuff we need
 		foreach ($relationNames as $i => $relationName)
@@ -64,7 +61,7 @@ class RelationUnifier {
 			$currentRelationIdentifier = implode('.', array_slice($relationNames, 0, $i + 1));
 
 			// get te unified relation object
-			$unifiedRelation = $this->unify($lastRelation, $relation);
+			$unifiedRelation = $this->unify($lastRelation, $relation, $currentRelationIdentifier);
 
 			// store the result in cache
 			$this->cached[$currentRelationIdentifier] = $lastRelation = $unifiedRelation;

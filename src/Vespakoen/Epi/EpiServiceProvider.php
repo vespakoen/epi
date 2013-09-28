@@ -9,6 +9,10 @@ use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Manipulators\Sorter;
 use Vespakoen\Epi\Manipulators\Limiter;
 use Vespakoen\Epi\Manipulators\Join;
+use Vespakoen\Epi\Relations\HasMany;
+use Vespakoen\Epi\Relations\BelongsToMany;
+use Vespakoen\Epi\Helpers\RelationUnifier;
+use Vespakoen\Epi\Helpers\SafeTableName;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -39,30 +43,32 @@ class EpiServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->registerExtractors();
-		$this->registerEpi();
 		$this->registerManipulators();
+		$this->registerRelations();
+		$this->registerHelpers();
+		$this->registerEpi();
 	}
 
 	protected function registerExtractors()
 	{
 		$this->app->bind('epi::extractors.filter', function($app)
 		{
-			return new FilterExtractor($app['config']['epi::epi']);
+			return new FilterExtractor($app['epi::helpers.safetablename'], $app['config']['epi::epi']);
 		});
 
 		$this->app->bind('epi::extractors.sorter', function($app)
 		{
-			return new SorterExtractor($app['config']['epi::epi']);
+			return new SorterExtractor($app['epi::helpers.safetablename'], $app['config']['epi::epi']);
 		});
 
 		$this->app->bind('epi::extractors.limiter', function($app)
 		{
-			return new LimiterExtractor($app['config']['epi::epi']);
+			return new LimiterExtractor($app['epi::helpers.safetablename'], $app['config']['epi::epi']);
 		});
 
 		$this->app->bind('epi::extractors.join', function($app)
 		{
-			return new JoinExtractor($app['config']['epi::epi']);
+			return new JoinExtractor($app['epi::helpers.safetablename'], $app['epi::helpers.relationunifier']);
 		});
 	}
 
@@ -70,22 +76,63 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('epi::manipulators.filter', function($app)
 		{
-			return new Filter($app['epi::epi'], $app['config']['epi::epi']);
+			return new Filter;
 		});
 
 		$this->app->bind('epi::manipulators.sorter', function($app)
 		{
-			return new Sorter($app['epi::epi'], $app['config']['epi::epi']);
+			return new Sorter;
 		});
 
 		$this->app->bind('epi::manipulators.limiter', function($app)
 		{
-			return new Limiter($app['epi::epi'], $app['config']['epi::epi']);
+			return new Limiter;
 		});
 
 		$this->app->bind('epi::manipulators.join', function($app)
 		{
-			return new Join($app['epi::epi'], $app['config']['epi::epi']);
+			return new Join;
+		});
+	}
+
+	protected function registerRelations()
+	{
+		$this->app->bind('epi::relations.belongsto', function($app)
+		{
+			return new BelongsTo;
+		});
+
+		$this->app->bind('epi::relations.belongstomany', function($app)
+		{
+			return new BelongsToMany;
+		});
+
+		$this->app->bind('epi::relations.hasmany', function($app)
+		{
+			return new HasMany;
+		});
+
+		$this->app->bind('epi::relations.hasone', function($app)
+		{
+			return new HasOne;
+		});
+
+		$this->app->bind('epi::relations.morphmany', function($app)
+		{
+			return new MorphOne;
+		});
+	}
+
+	protected function registerHelpers()
+	{
+		$this->app->singleton('epi::helpers.relationunifier', function($app)
+		{
+			return new RelationUnifier($app);
+		});
+
+		$this->app->singleton('epi::helpers.safetablename', function($app)
+		{
+			return new SafeTableName($app['epi::helpers.relationunifier']);
 		});
 	}
 

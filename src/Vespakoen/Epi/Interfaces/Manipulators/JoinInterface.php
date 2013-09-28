@@ -2,6 +2,6 @@
 
 interface JoinInterface extends ManipulatorInterface {
 
-	public function make($table, $first, $operator, $second);
+	public function make($table, $first, $operator, $second)
 
 }

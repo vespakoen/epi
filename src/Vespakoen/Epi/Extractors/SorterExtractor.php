@@ -2,12 +2,7 @@
 
 use Vespakoen\Epi\Interfaces\Extractors\SorterExtractorInterface;
 
-class SorterExtractor implements SorterExtractorInterface {
-
-	public function __construct(array $config)
-	{
-		$this->config = $config;
-	}
+class SorterExtractor extends Extractor implements SorterExtractorInterface {
 
 	public function extract(array $input)
 	{
