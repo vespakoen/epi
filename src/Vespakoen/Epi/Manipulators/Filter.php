@@ -12,15 +12,18 @@ class Filter implements FilterInterface {
 
 	public $value;
 
-	public function make($relationIdentifier, $table, $column, $operator, $value)
+	public function __construct($relationIdentifier, $table, $column, $operator, $value)
 	{
 		$this->relationIdentifier = $relationIdentifier;
 		$this->table = $table;
 		$this->column = $column;
 		$this->operator = $operator;
 		$this->value = $value;
+	}
 
-		return $this;
+	public static function make($relationIdentifier, $table, $column, $operator, $value)
+	{
+		return new static($relationIdentifier, $table, $column, $operator, $value);
 	}
 
 	public function applyTo($query)

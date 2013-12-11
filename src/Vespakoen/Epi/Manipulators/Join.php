@@ -12,14 +12,17 @@ class Join implements JoinInterface {
 
 	public $second;
 
-	public function make($table, $first, $operator, $second)
+	public function __construct($table, $first, $operator, $second)
 	{
 		$this->table = $table;
 		$this->first = $first;
 		$this->operator = $operator;
 		$this->second = $second;
+	}
 
-		return $this;
+	public static function make($table, $first, $operator, $second)
+	{
+		return new static($table, $first, $operator, $second);
 	}
 
 	public function applyTo($query)
