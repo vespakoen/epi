@@ -1,12 +1,13 @@
 <?php namespace Vespakoen\Epi\Relations;
 
+use Vespakoen\Epi\Manipulators\Join;
 use Vespakoen\Epi\Interfaces\RelationInterface;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\Relation as LaravelRelation;
 
-class BelongsToMany implements RelationInterface {
+class BelongsToMany extends Relation implements RelationInterface {
 
-	public function make($parent = null, Relation $relation = null, $relationIdentifier = null)
+	public function make($parent = null, LaravelRelation $relation = null, $relationIdentifier = null)
 	{
 		$this->parent = $parent;
 		$this->relation = $relation;
@@ -17,77 +18,86 @@ class BelongsToMany implements RelationInterface {
 
 	public function getJoins()
 	{
-		$table = $this->parent->getTable();
-		$key = $this->parent->getKeyName();
-dd($key);
-		$intermediateTable = $eloquentRelation->getTable();
-		$intermediateKey = str_replace($intermediateTable.'.', '', $eloquentRelation->getForeignKey());
-		$intermediateOtherKey = str_replace($intermediateTable.'.', '', $eloquentRelation->getOtherKey());
+		$firstTable = $this->getFirstTable();
+		$firstForeign = $this->getFirstForeign();
+		$firstOther = $this->getFirstOther();
 
-		$foreignTable = $eloquentRelation->getRelated()->getTable();
-		$foreignKey = $eloquentRelation->getRelated()->getKeyName();
-
-		$relation = new BelongsToMany($parent, $table, $key, $intermediateTable, $intermediateKey, $intermediateOtherKey, $foreignTable, $foreignKey);
+		$secondTable = $this->getSecondTable();
+		$secondForeign = $this->getSecondForeign();
+		$secondOther = $this->getSecondOther();
 
 		return array(
-			Join::make(),
-			Join::make()
+			Join::make($firstTable, $firstForeign, '=', $firstOther),
+			Join::make($secondTable, $secondForeign, '=', $secondOther)
 		);
 	}
 
 	public function getTable()
 	{
-		return $this->relation->getTable();
+		$table = $this->relation
+			->getModel()
+			->getTable();
+
+		return $table;
 	}
 
+	protected function getFirstTable()
+	{
+		$table = $this->relation->getTable();
+
+		return $this->safe($table);
+	}
+
+	protected function getSecondTable()
+	{
+		$table = $this->relation
+			->getModel()
+			->getTable();
+
+		return $this->safe($table);
+	}
+
+	protected function getFirstForeign()
+	{
+		$table = $this->parent->getTable();
+		$safeTable = $this->safe($table);
+
+		$key = $this->parent->getKeyName();
+
+		return $safeTable.'.'.$key;
+	}
+
+	protected function getSecondForeign()
+	{
+		$tableAndKey = $this->relation->getOtherKey();
+		list($table, $key) = explode('.', $tableAndKey);
+
+		$safeTable = $this->safe($table);
+
+		return $safeTable.'.'.$key;
+	}
+
+	protected function getFirstOther()
+	{
+		$tableAndKey = $this->relation->getForeignKey();
+		list($table, $key) = explode('.', $tableAndKey);
+
+		$safeTable = $this->safe($table);
+
+		return $safeTable.'.'.$key;
+	}
+
+	protected function getSecondOther()
+	{
+		$table = $this->relation->getModel()
+			->getTable();
+		$safeTable = $this->safe($table);
+
+		$key = $this->relation->getModel()
+			->getKeyName();
+
+		return $safeTable.'.'.$key;
+	}
+
+
 }
-
-
-
-				// case 'Illuminate\Database\Eloquent\Relations\BelongsToMany':
-
-				// break;
-				// case 'Illuminate\Database\Eloquent\Relations\HasOne':
-				// 	$table = $eloquentRelation->getParent()->getTable();
-				// 	$key = $eloquentRelation->getParent()->getKeyName();
-
-				// 	$foreignTable = $eloquentRelation->getRelated()->getTable();
-				// 	$foreignKey = $eloquentRelation->getForeignKey();
-
-				// 	$relation = new HasOne($parent, $table, $key, $foreignTable, $foreignKey);
-				// break;
-				// case 'Illuminate\Database\Eloquent\Relations\HasMany':
-				// 	$table = $eloquentRelation->getParent()->getTable();
-				// 	$key = $eloquentRelation->getParent()->getKeyName();
-
-				// 	$foreignTable = $eloquentRelation->getRelated()->getTable();
-				// 	$parts = explode('.', $eloquentRelation->getForeignKey());
-				// 	$foreignKey = array_pop($parts);
-
-				// 	$relation = new HasMany($parent, $table, $key, $foreignTable, $foreignKey);
-				// break;
-				// case 'Illuminate\Database\Eloquent\Relations\BelongsTo':
-				// 	$table = $eloquentRelation->getParent()->getTable();
-				// 	$key = $eloquentRelation->getForeignKey();
-
-				// 	$foreignTable = $eloquentRelation->getRelated()->getTable();
-				// 	$foreignKey = $eloquentRelation->getRelated()->getKeyName();
-
-				// 	$relation = new BelongsTo($parent, $table, $key, $foreignTable, $foreignKey);
-				// break;
-				// case 'Illuminate\Database\Eloquent\Relations\MorphMany':
-				// 	$table = $eloquentRelation->getParent()->getTable();
-				// 	$key = $eloquentRelation->getParent()->getKeyName();
-
-				// 	$foreignTable = $eloquentRelation->getRelated()->getTable();
-
-				// 	$parts = explode('.', $eloquentRelation->getForeignKey());
-				// 	$foreignKey = array_pop($parts);
-
-				// 	$parts = explode('.', $eloquentRelation->getMorphType());
-				// 	$morphType = array_pop($parts);
-
-				// 	$morphClass = $eloquentRelation->getMorphClass();
-
-				// 	$relation = new MorphMany($parent, $table, $key, $foreignTable, $foreignKey, $morphType, $morphClass);
-				// break;

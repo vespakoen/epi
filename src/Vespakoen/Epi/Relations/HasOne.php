@@ -3,11 +3,11 @@
 use Vespakoen\Epi\Manipulators\Join;
 use Vespakoen\Epi\Interfaces\RelationInterface;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\Relation as LaravelRelation;
 
-class HasOne implements RelationInterface {
+class HasOne extends Relation implements RelationInterface {
 
-	public function make($parent = null, Relation $relation = null, $relationIdentifier)
+	public function make($parent = null, LaravelRelation $relation = null, $relationIdentifier)
 	{
 		$this->parent = $parent;
 		$this->relation = $relation;
