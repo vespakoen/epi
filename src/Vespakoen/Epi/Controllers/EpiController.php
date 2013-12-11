@@ -62,7 +62,10 @@ class EpiController extends Controller {
 	{
 		$this->fire('before.index');
 
-		$validator = Validator::make($this->getInput(), $this->indexRules);
+		$input = $this->getInput();
+		$cleanInput = Epi::getCleanInput($input);
+
+		$validator = Validator::make($cleanInput, $this->indexRules);
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -76,7 +79,6 @@ class EpiController extends Controller {
 			return $this->respond($response);
 		}
 
-		$input = $this->getInput();
 		$model = $this->getModel();
 
 		$results = Epi::make($model, $input)

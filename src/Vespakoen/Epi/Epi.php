@@ -6,6 +6,7 @@ use Vespakoen\Epi\Interfaces\Extractors\LimiterExtractorInterface;
 use Vespakoen\Epi\Interfaces\Extractors\JoinExtractorInterface;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Epi {
 
@@ -56,6 +57,34 @@ class Epi {
 
 	public function getCleanInput($input = array())
 	{
+		$operators = $this->filterExtractor->getOperators();
+
+		$clean = function($value) use ($operators)
+		{
+			foreach($operators as $operator)
+			{
+				$operatorLength = strlen($operator);
+				if(substr($value, 0, $operatorLength) == $operator)
+				{
+					$value = substr($value, strlen($operator));
+					break;
+				}
+			}
+
+			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+			{
+				return trim($value, '%');
+			}
+
+			return $value;
+        };
+
+		$filters = array_get($input, 'filter');
+		foreach ($filters as $key => $value)
+		{
+			$input['filter'][$key] = $clean($value);
+		}
+
 		return $input;
 	}
 

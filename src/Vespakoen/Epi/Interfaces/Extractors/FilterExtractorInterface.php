@@ -10,4 +10,6 @@ interface FilterExtractorInterface {
 	 */
 	public function extract(array $input);
 
+	public function getOperators();
+
 }

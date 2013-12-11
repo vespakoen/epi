@@ -43,6 +43,11 @@ class FilterExtractor extends Extractor implements FilterExtractorInterface {
 		return $filters;
 	}
 
+	public function getOperators()
+	{
+		return $this->operators;
+	}
+
 	protected function extractOperatorAndValue($value)
 	{
 		$matchedOperator = '=';
