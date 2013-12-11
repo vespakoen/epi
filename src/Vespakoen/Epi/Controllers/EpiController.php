@@ -62,7 +62,7 @@ class EpiController extends Controller {
 	{
 		$this->fire('before.index');
 
-		$validator = Validator::make(Epi::getCleanInput(), $this->indexRules);
+		$validator = Validator::make($this->getInput(), $this->indexRules);
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -80,8 +80,7 @@ class EpiController extends Controller {
 		$model = $this->getModel();
 
 		$results = Epi::make($model, $input)
-			->with($this->eagerLoad)
-			->hstore($this->hstore)
+			->setEagerloads($this->eagerLoad)
 			->get();
 
 		$this->fire('after.index', array($results));
@@ -282,6 +281,11 @@ class EpiController extends Controller {
 		}
 
 		return $result;
+	}
+
+	protected function getModel()
+	{
+		return $this->model;
 	}
 
 }
