@@ -118,7 +118,7 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->app->singleton('epi::epi', function($app)
 		{
-			return new Epi($app['epi::extractors.filter'], $app['epi::extractors.sorter'], $app['epi::extractors.limiter'], $app['epi::extractors.join']);
+			return new Epi($app['epi::extractors.filter'], $app['epi::extractors.sorter'], $app['epi::extractors.join'], $app['epi::extractors.limiter'], array());
 		});
 	}
 

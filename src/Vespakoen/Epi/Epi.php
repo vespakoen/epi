@@ -11,12 +11,13 @@ class Epi {
 
 	public $eagerLoads = array();
 
-	public function __construct(FilterExtractorInterface $filterExtractor, SorterExtractorInterface $sorterExtractor, LimiterExtractorInterface $limiterExtractor, JoinExtractorInterface $joinExtractor)
+	public function __construct(FilterExtractorInterface $filterExtractor, SorterExtractorInterface $sorterExtractor, JoinExtractorInterface $joinExtractor, LimiterExtractorInterface $limiterExtractor, $otherExtractors = array())
 	{
 		$this->filterExtractor = $filterExtractor;
 		$this->sorterExtractor = $sorterExtractor;
 		$this->limiterExtractor = $limiterExtractor;
 		$this->joinExtractor = $joinExtractor;
+		$this->otherExtractors = $otherExtractors;
 	}
 
 	public function make(Model $model, array $input)
@@ -80,7 +81,13 @@ class Epi {
 
 		$limiters = $this->limiterExtractor->extract($this->input);
 
-		return array_merge($joins, $filters, $sorters, $limiters);
+		$manipulators = array();
+		foreach($this->otherExtractors as $extractor)
+		{
+			$manipulators += $extractor->extract($this->input);
+		}
+
+		return array_merge($joins, $filters, $sorters, $limiters, $manipulators);
 	}
 
 }
