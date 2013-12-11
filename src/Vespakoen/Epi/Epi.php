@@ -76,9 +76,9 @@ class Epi {
 	{
 		$filters = $this->filterExtractor->extract($this->input);
 		$sorters = $this->sorterExtractor->extract($this->input);
+		$joins = $this->joinExtractor->extract($filters, $sorters);
 
 		$limiters = $this->limiterExtractor->extract($this->input);
-		$joins = $this->joinExtractor->extract($filters, $sorters);
 
 		return array_merge($joins, $filters, $sorters, $limiters);
 	}
