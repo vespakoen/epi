@@ -3,8 +3,10 @@
 return array(
 
 	'keys' => array(
-		'filter' => 'filters',
-		'sort' => 'sort'
+		'filter' => 'filter',
+		'sort' => 'sort',
+		'skip' => 'skip',
+		'take' => 'take'
 	)
 
 );
