@@ -12,6 +12,7 @@ use Vespakoen\Epi\Manipulators\Join;
 use Vespakoen\Epi\Relations\HasMany;
 use Vespakoen\Epi\Relations\HasOne;
 use Vespakoen\Epi\Relations\BelongsToMany;
+use Vespakoen\Epi\Relations\MorphMany;
 use Vespakoen\Epi\Helpers\RelationUnifier;
 use Vespakoen\Epi\Helpers\SafeTableName;
 
@@ -76,27 +77,27 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('epi::relations.belongsto', function($app)
 		{
-			return new BelongsTo;
+			return new BelongsTo($app['epi::helpers.safetablename']);
 		});
 
 		$this->app->bind('epi::relations.belongstomany', function($app)
 		{
-			return new BelongsToMany;
+			return new BelongsToMany($app['epi::helpers.safetablename']);
 		});
 
 		$this->app->bind('epi::relations.hasmany', function($app)
 		{
-			return new HasMany;
+			return new HasMany($app['epi::helpers.safetablename']);
 		});
 
 		$this->app->bind('epi::relations.hasone', function($app)
 		{
-			return new HasOne;
+			return new HasOne($app['epi::helpers.safetablename']);
 		});
 
 		$this->app->bind('epi::relations.morphmany', function($app)
 		{
-			return new MorphOne;
+			return new MorphMany($app['epi::helpers.safetablename']);
 		});
 	}
 
