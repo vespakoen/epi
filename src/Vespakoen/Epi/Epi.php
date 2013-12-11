@@ -53,6 +53,11 @@ class Epi {
 		return $query->first();
 	}
 
+	public function getCleanInput($input = array())
+	{
+		return $input;
+	}
+
 	protected function getQuery()
 	{
 		$query = $this->model->newInstance()
@@ -71,6 +76,7 @@ class Epi {
 	{
 		$filters = $this->filterExtractor->extract($this->input);
 		$sorters = $this->sorterExtractor->extract($this->input);
+
 		$limiters = $this->limiterExtractor->extract($this->input);
 		$joins = $this->joinExtractor->extract($filters, $sorters);
 
