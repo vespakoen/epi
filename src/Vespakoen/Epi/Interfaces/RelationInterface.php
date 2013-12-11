@@ -8,6 +8,4 @@ interface RelationInterface {
 
 	public function getJoins();
 
-	public function getTable();
-
 }
