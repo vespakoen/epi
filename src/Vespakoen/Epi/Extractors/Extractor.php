@@ -13,4 +13,21 @@ class Extractor {
 		return $this->safeTableName->getForRelationIdentifier($relationIdentifier);
 	}
 
+	protected function extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn)
+	{
+		$relationNames = explode('.', $rawRelationIdentifierAndColumn);
+		$column = array_pop($relationNames);
+		$relationIdentifier = implode('.', $relationNames);
+
+		if($relationIdentifier == '')
+		{
+			$relationIdentifier = null;
+		}
+
+		return array(
+			$relationIdentifier,
+			$column
+		);
+	}
+
 }
