@@ -3,13 +3,13 @@
     "description": "",
     "authors": [
         {
-            "name": "Roj Vroemen",
-            "email": "roj.vroemen@azion.nl"
+            "name": "Koen Schmeets",
+            "email": "hello@koenschmeets.nl"
         }
     ],
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.0.x"
+        "illuminate/support": "~4"
     },
     "autoload": {
         "psr-0": {
