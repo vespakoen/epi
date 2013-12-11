@@ -34,6 +34,14 @@ class RelationUnifier {
 	 */
 	public function get($relationIdentifier)
 	{
+		// we need to set some values for the first run
+		$model = $this->app['epi::epi']->getModel();
+
+		if( ! $relationIdentifier)
+		{
+			return $model;
+		}
+
 		// got cache?
 		if(array_key_exists($relationIdentifier, $this->cached))
 		{
@@ -42,9 +50,6 @@ class RelationUnifier {
 
 		// split up the identifier into the relation names
 		$relationNames = explode('.', $relationIdentifier);
-
-		// we need to set some values for the first run
-		$model = $this->app['epi::epi']->getModel();
 
 		$lastRelation = $model;
 
