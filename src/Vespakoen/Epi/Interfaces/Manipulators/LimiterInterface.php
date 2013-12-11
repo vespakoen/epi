@@ -1,7 +1,7 @@
 <?php namespace Vespakoen\Epi\Interfaces\Manipulators;
 
-interface JoinInterface extends ManipulatorInterface {
+interface LimiterInterface extends ManipulatorInterface {
 
-	public function make($table, $first, $operator, $second);
+	public static function make($skip, $take);
 
 }

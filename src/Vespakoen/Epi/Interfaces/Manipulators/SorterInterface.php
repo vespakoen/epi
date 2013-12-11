@@ -2,7 +2,7 @@
 
 interface SorterInterface extends ManipulatorInterface {
 
-	public function make($relationIdentifier, $column, $direction);
+	public static function make($relationIdentifier, $table, $column, $direction);
 
 	public function getRelationIdentifier();
 
