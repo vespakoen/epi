@@ -10,6 +10,7 @@ use Vespakoen\Epi\Manipulators\Sorter;
 use Vespakoen\Epi\Manipulators\Limiter;
 use Vespakoen\Epi\Manipulators\Join;
 use Vespakoen\Epi\Relations\HasMany;
+use Vespakoen\Epi\Relations\HasOne;
 use Vespakoen\Epi\Relations\BelongsToMany;
 use Vespakoen\Epi\Helpers\RelationUnifier;
 use Vespakoen\Epi\Helpers\SafeTableName;
@@ -43,7 +44,6 @@ class EpiServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->registerExtractors();
-		$this->registerManipulators();
 		$this->registerRelations();
 		$this->registerHelpers();
 		$this->registerEpi();
@@ -69,29 +69,6 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->bind('epi::extractors.join', function($app)
 		{
 			return new JoinExtractor($app['epi::helpers.safetablename'], $app['epi::helpers.relationunifier']);
-		});
-	}
-
-	protected function registerManipulators()
-	{
-		$this->app->bind('epi::manipulators.filter', function($app)
-		{
-			return new Filter;
-		});
-
-		$this->app->bind('epi::manipulators.sorter', function($app)
-		{
-			return new Sorter;
-		});
-
-		$this->app->bind('epi::manipulators.limiter', function($app)
-		{
-			return new Limiter;
-		});
-
-		$this->app->bind('epi::manipulators.join', function($app)
-		{
-			return new Join;
 		});
 	}
 
