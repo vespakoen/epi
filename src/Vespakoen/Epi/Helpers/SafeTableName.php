@@ -9,11 +9,16 @@ class SafeTableName {
 		$this->relationUnifier = $relationUnifier;
 	}
 
-	public function getForRelationIdentifier($relationIdentifier)
+	public function getForRelationIdentifier($relationIdentifier, $customTable = null)
 	{
 		$relation = $this->relationUnifier->get($relationIdentifier);
 
 		$table = $relation->getTable();
+
+		if($customTable)
+		{
+			$table = $customTable;
+		}
 
 		$prefix = ltrim('safe_', str_repeat('safe_', count(explode('.', $relationIdentifier))));
 
