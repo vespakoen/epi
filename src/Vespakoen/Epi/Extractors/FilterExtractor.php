@@ -1,6 +1,6 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
-use Vespakoen\Epi\Facades\Filter;
+use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Interfaces\Extractors\FilterExtractorInterface;
 
 use Illuminate\Support\Str;
@@ -34,6 +34,7 @@ class FilterExtractor extends Extractor implements FilterExtractorInterface {
 		{
 			list($relationIdentifier, $column) = $this->extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn);
 			list($operator, $value) = $this->extractOperatorAndValue($rawOperatorAndValue);
+
 			$table = $this->getSafeAliasedTableName($relationIdentifier);
 
 			$filters[] = Filter::make($relationIdentifier, $table, $column, $operator, $value);
@@ -42,36 +43,27 @@ class FilterExtractor extends Extractor implements FilterExtractorInterface {
 		return $filters;
 	}
 
-	protected function extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn)
+	protected function extractOperatorAndValue($value)
 	{
-		$relationNames = explode('.', $rawRelationIdentifierAndColumn);
-		$column = array_pop($relationNames);
-		$relationIdentifier = implode('.', $relationNames);
+		$matchedOperator = '=';
 
-		return array(
-			$relationIdentifier,
-			$column
-		);
-	}
-
-	protected function extractOperatorAndValue($rawOperatorAndValue)
-	{
 		foreach($this->operators as $operator)
 		{
-			if(Str::startsWith($rawOperatorAndValue, $operator))
+			if(Str::startsWith($value, $operator))
 			{
-				$value = substr($rawOperatorAndValue, strlen($operator));
+				$matchedOperator = $operator;
+				$value = substr($value, strlen($operator));
 				break;
 			}
 		}
 
-		if(Str::startsWith($rawOperatorAndValue, '%') || Str::endsWith($rawOperatorAndValue, '%'))
+		if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
 		{
-			$operator = 'LIKE';
+			$matchedOperator = 'LIKE';
 		}
 
 		return array(
-			$operator,
+			$matchedOperator,
 			$value
 		);
 	}
