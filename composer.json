@@ -16,6 +16,8 @@
         "illuminate/container": "~4",
         "illuminate/database": "~4",
         "illuminate/config": "~4",
+        "illuminate/foundation": "~4",
+        "orchestra/testbench": "2.0.*",
         "mockery/mockery": "dev-master@dev"
     },
     "autoload": {
