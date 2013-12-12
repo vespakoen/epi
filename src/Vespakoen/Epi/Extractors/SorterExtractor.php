@@ -1,6 +1,6 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
-use Vespakoen\Epi\Manipulators\Sorter;
+use Vespakoen\Epi\Facades\Sorter;
 use Vespakoen\Epi\Interfaces\Extractors\SorterExtractorInterface;
 
 class SorterExtractor extends Extractor implements SorterExtractorInterface {
@@ -18,29 +18,30 @@ class SorterExtractor extends Extractor implements SorterExtractorInterface {
 
 		// make some sorters!
 		$sorters = array();
-
 		if(is_string($input[$key]))
 		{
-			list($relationIdentifier, $column) = $this->extractRelationIdentifierAndColumn($input[$key]);
-			$direction = 'asc';
-
-			$table = $this->getSafeAliasedTableName($relationIdentifier);
-
-			$sorters[] = Sorter::make($relationIdentifier, $table, $column, $direction);
+			$sorters[] = $this->getSorter($input[$key], 'asc');
 
 			return $sorters;
 		}
 
 		foreach($input[$key] as $rawRelationIdentifierAndColumn => $direction)
 		{
-			list($relationIdentifier, $column) = $this->extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn);
-
-			$table = $this->getSafeAliasedTableName($relationIdentifier);
-
-			$sorters[] = Sorter::make($relationIdentifier, $table, $column, $direction);
+			$sorters[] = $this->getSorter($rawRelationIdentifierAndColumn, $direction);
 		}
 
 		return $sorters;
+	}
+
+	protected function getSorter($rawRelationIdentifierAndColumn, $direction)
+	{
+		list($relationIdentifier, $column) = $this->extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn);
+
+		$relation = $this->relationUnifier->get($relationIdentifier);
+		$table = $relation->getTable();
+
+		$sorter = $this->app->make('epi::manipulators.sorter');
+		return $sorter->make($relationIdentifier, $table, $column, $direction);
 	}
 
 }
