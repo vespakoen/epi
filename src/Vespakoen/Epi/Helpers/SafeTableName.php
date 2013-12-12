@@ -16,25 +16,7 @@ class SafeTableName {
 	{
 		$relation = $this->relationUnifier->get($relationIdentifier);
 
-		// if($relation->parent instanceof Model)
-		// {
-		// 	$parentTable = $relation->parent->getTable();
-		// }
-		// else
-		// {
-		//
-		if($relation->parent)
-		{
-			$parentTable = $relation->parent->getTable();
-		}
-		else
-		{
-			$parentTable = null;
-		}
-		//}
-
 		$table = $relation->getTable();
-
 		if($customTable)
 		{
 			$table = $customTable;
@@ -42,7 +24,8 @@ class SafeTableName {
 
 		$count = count(explode('.', $relationIdentifier)) - 1;
 
-		if($parentTable == $table && $extraUnique)
+		$parentTable = null;
+		if($relation && $relation->parent && $relation->parent->getTable() == $table && $extraUnique)
 		{
 			$count++;
 		}
