@@ -48,7 +48,8 @@ class HasMany extends Relation implements RelationInterface {
 
 	protected function getFirstColumn()
 	{
-		$key = $this->parent->getKeyName();
+		$key = $this->relation->getParent()
+			->getKeyName();
 
 		return $key;
 	}
