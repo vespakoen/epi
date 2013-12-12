@@ -2,16 +2,36 @@
 
 use Vespakoen\Epi\Interfaces\RelationInterface;
 
+use Illuminate\Database\Eloquent\Model;
+
 class SafeTableName {
 
-	public function __construct($relationUnifier)
+	public function __construct($app)
 	{
-		$this->relationUnifier = $relationUnifier;
+		$this->app = $app;
+		$this->relationUnifier = $app['epi::helpers.relationunifier'];
 	}
 
-	public function getForRelationIdentifier($relationIdentifier, $customTable = null)
+	public function getForRelationIdentifier($relationIdentifier, $customTable = null, $extraUnique = false)
 	{
 		$relation = $this->relationUnifier->get($relationIdentifier);
+
+		// if($relation->parent instanceof Model)
+		// {
+		// 	$parentTable = $relation->parent->getTable();
+		// }
+		// else
+		// {
+		//
+		if($relation->parent)
+		{
+			$parentTable = $relation->parent->getTable();
+		}
+		else
+		{
+			$parentTable = null;
+		}
+		//}
 
 		$table = $relation->getTable();
 
@@ -20,7 +40,14 @@ class SafeTableName {
 			$table = $customTable;
 		}
 
-		$prefix = ltrim('safe_', str_repeat('safe_', count(explode('.', $relationIdentifier))));
+		$count = count(explode('.', $relationIdentifier)) - 1;
+
+		if($parentTable == $table && $extraUnique)
+		{
+			$count++;
+		}
+
+		$prefix = str_repeat('safe_', $count);
 
 		return $prefix.$table;
 	}
