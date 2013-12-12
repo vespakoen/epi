@@ -2,14 +2,15 @@
 
 class Relation {
 
-	public function __construct($safeTableName)
+	public function __construct($app)
 	{
-		$this->safeTableName = $safeTableName;
+		$this->app = $app;
+		$this->safeTableName = $app['epi::helpers.safetablename'];
 	}
 
-	protected function safe($table = null)
+	protected function safe($table = null, $extraUnique = false)
 	{
-		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $table);
+		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $table, $extraUnique);
 	}
 
 }
