@@ -2,32 +2,48 @@
 
 use Vespakoen\Epi\Interfaces\Manipulators\JoinInterface;
 
-class Join implements JoinInterface {
+class Join extends Manipulator implements JoinInterface {
 
-	public $table;
+	public $relationIdentifier;
 
-	public $first;
+	public $firstTable;
+
+	public $firstColumn;
 
 	public $operator;
 
-	public $second;
+	public $secondTable;
 
-	public function __construct($table, $first, $operator, $second)
+	public $secondColumn;
+
+	public function make($relationIdentifier, $firstTable, $firstColumn, $operator, $secondTable, $secondColumn)
 	{
-		$this->table = $table;
-		$this->first = $first;
+		$this->relationIdentifier = $relationIdentifier;
+		$this->firstTable = $firstTable;
+		$this->firstColumn = $firstColumn;
 		$this->operator = $operator;
-		$this->second = $second;
-	}
+		$this->secondTable = $secondTable;
+		$this->secondColumn = $secondColumn;
 
-	public static function make($table, $first, $operator, $second)
-	{
-		return new static($table, $first, $operator, $second);
+		return $this;
 	}
 
 	public function applyTo($query)
 	{
-		return $query->join($this->table, $this->first, $this->operator, $this->second);
+		$firstTable = $this->firstTable;
+		$safeFirstTable = $this->safe($firstTable);
+		$firstColumn = $this->firstColumn;
+		$operator = $this->operator;
+		$secondTable = $this->secondTable;
+		$safeSecondTable = $this->safe($secondTable, true);
+		$secondColumn = $this->secondColumn;
+
+		if($secondTable !== $safeSecondTable)
+		{
+			$secondTable = $secondTable.' as '.$safeSecondTable;
+		}
+
+		return $query->join($secondTable, $safeFirstTable.'.'.$firstColumn, $operator, $safeSecondTable.'.'.$secondColumn);
 	}
 
 }
