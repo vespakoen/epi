@@ -44,9 +44,10 @@ class EpiServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		$this->registerHelpers();
 		$this->registerExtractors();
 		$this->registerRelations();
-		$this->registerHelpers();
+		$this->registerManipulators();
 		$this->registerEpi();
 	}
 
@@ -54,22 +55,45 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('epi::extractors.filter', function($app)
 		{
-			return new FilterExtractor($app['epi::helpers.safetablename'], $app['config']['epi::epi']);
+			return new FilterExtractor($app);
 		});
 
 		$this->app->bind('epi::extractors.sorter', function($app)
 		{
-			return new SorterExtractor($app['epi::helpers.safetablename'], $app['config']['epi::epi']);
+			return new SorterExtractor($app);
 		});
 
 		$this->app->bind('epi::extractors.limiter', function($app)
 		{
-			return new LimiterExtractor($app['epi::helpers.safetablename'], $app['config']['epi::epi']);
+			return new LimiterExtractor($app);
 		});
 
 		$this->app->bind('epi::extractors.join', function($app)
 		{
-			return new JoinExtractor($app['epi::helpers.safetablename'], $app['epi::helpers.relationunifier']);
+			return new JoinExtractor($app);
+		});
+	}
+
+	protected function registerManipulators()
+	{
+		$this->app->bind('epi::manipulators.filter', function($app)
+		{
+			return new Filter($app);
+		});
+
+		$this->app->bind('epi::manipulators.join', function($app)
+		{
+			return new Join($app);
+		});
+
+		$this->app->bind('epi::manipulators.limiter', function($app)
+		{
+			return new Limiter($app);
+		});
+
+		$this->app->bind('epi::manipulators.sorter', function($app)
+		{
+			return new Sorter($app);
 		});
 	}
 
@@ -77,27 +101,27 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind('epi::relations.belongsto', function($app)
 		{
-			return new BelongsTo($app['epi::helpers.safetablename']);
+			return new BelongsTo($app);
 		});
 
 		$this->app->bind('epi::relations.belongstomany', function($app)
 		{
-			return new BelongsToMany($app['epi::helpers.safetablename']);
+			return new BelongsToMany($app);
 		});
 
 		$this->app->bind('epi::relations.hasmany', function($app)
 		{
-			return new HasMany($app['epi::helpers.safetablename']);
+			return new HasMany($app);
 		});
 
 		$this->app->bind('epi::relations.hasone', function($app)
 		{
-			return new HasOne($app['epi::helpers.safetablename']);
+			return new HasOne($app);
 		});
 
 		$this->app->bind('epi::relations.morphmany', function($app)
 		{
-			return new MorphMany($app['epi::helpers.safetablename']);
+			return new MorphMany($app);
 		});
 	}
 
@@ -110,7 +134,7 @@ class EpiServiceProvider extends ServiceProvider {
 
 		$this->app->singleton('epi::helpers.safetablename', function($app)
 		{
-			return new SafeTableName($app['epi::helpers.relationunifier']);
+			return new SafeTableName($app);
 		});
 	}
 
