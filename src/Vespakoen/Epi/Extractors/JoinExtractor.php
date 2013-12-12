@@ -6,12 +6,6 @@ use Illuminate\Support\Str;
 
 class JoinExtractor extends Extractor implements JoinExtractorInterface {
 
-	public function __construct($safeTableName, $relationUnifier)
-	{
-		$this->safeTableName = $safeTableName;
-		$this->relationUnifier = $relationUnifier;
-	}
-
 	public function extract(array $filters, array $sorters)
 	{
 		$manipulators = array_merge($filters, $sorters);
@@ -23,9 +17,16 @@ class JoinExtractor extends Extractor implements JoinExtractorInterface {
 		$joins = array();
 		foreach($relationIdentifiers as $relationIdentifier)
 		{
-			$unifiedRelation = $this->relationUnifier->get($relationIdentifier);
+			$allParts = explode('.', $relationIdentifier);
+			$parts = array();
+			foreach($allParts as $part)
+			{
+				$parts[] = $part;
 
-		 	$joins = array_merge($joins, $unifiedRelation->getJoins());
+				$unifiedRelation = $this->relationUnifier->get(implode('.', $parts));
+
+				$joins = array_merge($joins, $unifiedRelation->getJoins());
+			}
 		}
 
 		return $joins;
