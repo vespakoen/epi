@@ -94,12 +94,14 @@ class Epi {
 			->with($this->eagerLoads);
 
 		$manipulators = $this->getManipulators();
+
 		// $debugManipulators = array();
 		// foreach($manipulators as $manipulator)
 		// {
 		// 	$debugManipulators[] = $manipulator->debug();
 		// }
 		// dd($debugManipulators);
+
 		foreach($manipulators as $manipulator)
 		{
 			$query = $manipulator->applyTo($query);
