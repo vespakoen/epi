@@ -120,25 +120,23 @@ class ExtractorTest extends EpiTests {
 		$this->assertEquals($take, $input['take']);
 	}
 
-	// public function testCanExtractJoins()
-	// {
-	// 	$input = array(
-	// 		'filter' => array(
-	// 			'name' => 'koen'
-	// 		)
-	// 	);
-	// 	$filters = $this->filterExtractor->extract($input);
+	public function testCanExtractJoins()
+	{
+		$input = array(
+			'filter' => array(
+				'name' => 'koen'
+			)
+		);
+		$filters = $this->filterExtractor->extract($input);
 
-	// 	$input = array(
-	// 		'sort' => array(
-	// 			'name' => 'asc'
-	// 		)
-	// 	);
-	// 	$sorters = $this->sorterExtractor->extract($input);
+		$input = array(
+			'sort' => array(
+				'name' => 'asc'
+			)
+		);
+		$sorters = $this->sorterExtractor->extract($input);
 
-	// 	$joins = $this->joinExtractor->extract($filters, $sorters);
-
-	// 	dd($joins);
-	// }
+		$joins = $this->joinExtractor->extract($filters, $sorters);
+	}
 
 }
