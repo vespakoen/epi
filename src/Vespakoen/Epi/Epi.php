@@ -79,7 +79,7 @@ class Epi {
 			return $value;
         };
 
-		$filters = array_get($input, 'filter');
+		$filters = array_get($input, 'filter', array());
 		foreach ($filters as $key => $value)
 		{
 			$input['filter'][$key] = $clean($value);
@@ -94,6 +94,12 @@ class Epi {
 			->with($this->eagerLoads);
 
 		$manipulators = $this->getManipulators();
+		// $debugManipulators = array();
+		// foreach($manipulators as $manipulator)
+		// {
+		// 	$debugManipulators[] = $manipulator->debug();
+		// }
+		// dd($debugManipulators);
 		foreach($manipulators as $manipulator)
 		{
 			$query = $manipulator->applyTo($query);
