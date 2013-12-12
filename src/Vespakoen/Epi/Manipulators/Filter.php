@@ -2,7 +2,7 @@
 
 use Vespakoen\Epi\Interfaces\Manipulators\FilterInterface;
 
-class Filter implements FilterInterface {
+class Filter extends Manipulator implements FilterInterface {
 
 	public $relationIdentifier;
 
@@ -12,23 +12,26 @@ class Filter implements FilterInterface {
 
 	public $value;
 
-	public function __construct($relationIdentifier, $table, $column, $operator, $value)
+	public function make($relationIdentifier, $table, $column, $operator, $value)
 	{
 		$this->relationIdentifier = $relationIdentifier;
 		$this->table = $table;
 		$this->column = $column;
 		$this->operator = $operator;
 		$this->value = $value;
-	}
 
-	public static function make($relationIdentifier, $table, $column, $operator, $value)
-	{
-		return new static($relationIdentifier, $table, $column, $operator, $value);
+		return $this;
 	}
 
 	public function applyTo($query)
 	{
-		return $query->where($this->table.'.'.$this->column, $this->operator, $this->value);
+		$table = $this->table;
+		$safeTable = $this->safe($table, true);
+		$column = $this->column;
+		$operator = $this->operator;
+		$value = $this->value;
+
+		return $query->where($safeTable.'.'.$column, $operator, $value);
 	}
 
 	public function getRelationIdentifier()

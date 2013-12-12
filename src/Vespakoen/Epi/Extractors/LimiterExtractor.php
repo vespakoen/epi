@@ -1,6 +1,6 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
-use Vespakoen\Epi\Manipulators\Limiter;
+use Vespakoen\Epi\Facades\Limiter;
 use Vespakoen\Epi\Interfaces\Extractors\LimiterExtractorInterface;
 
 class LimiterExtractor extends Extractor implements LimiterExtractorInterface {
@@ -19,7 +19,8 @@ class LimiterExtractor extends Extractor implements LimiterExtractorInterface {
 
 		$limiters = array();
 
-		$limiters[] = Limiter::make(array_get($input, $skipKey, 0), array_get($input, $takeKey, 25));
+		$limiter = $this->app->make('epi::manipulators.limiter');
+		$limiters[] = $limiter->make(array_get($input, $skipKey, 0), array_get($input, $takeKey, 25));
 
 		return $limiters;
 	}

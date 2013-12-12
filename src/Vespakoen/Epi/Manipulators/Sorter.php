@@ -2,7 +2,7 @@
 
 use Vespakoen\Epi\Interfaces\Manipulators\SorterInterface;
 
-class Sorter implements SorterInterface {
+class Sorter extends Manipulator implements SorterInterface {
 
 	public $relationIdentifier;
 
@@ -10,17 +10,14 @@ class Sorter implements SorterInterface {
 
 	public $direction;
 
-	public function __construct($relationIdentifier, $table, $column, $direction)
+	public function make($relationIdentifier, $table, $column, $direction)
 	{
 		$this->relationIdentifier = $relationIdentifier;
 		$this->table = $table;
 		$this->column = $column;
 		$this->direction = $direction;
-	}
 
-	public static function make($relationIdentifier, $table, $column, $direction)
-	{
-		return new static($relationIdentifier, $table, $column, $direction);
+		return $this;
 	}
 
 	public function applyTo($query)

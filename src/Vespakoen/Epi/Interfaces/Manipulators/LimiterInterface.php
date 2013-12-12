@@ -2,6 +2,6 @@
 
 interface LimiterInterface extends ManipulatorInterface {
 
-	public static function make($skip, $take);
+	public function make($skip, $take);
 
 }

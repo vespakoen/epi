@@ -1,6 +1,5 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
-use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Interfaces\Extractors\FilterExtractorInterface;
 
 use Illuminate\Support\Str;
@@ -35,9 +34,11 @@ class FilterExtractor extends Extractor implements FilterExtractorInterface {
 			list($relationIdentifier, $column) = $this->extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn);
 			list($operator, $value) = $this->extractOperatorAndValue($rawOperatorAndValue);
 
-			$table = $this->getSafeAliasedTableName($relationIdentifier);
+			$relation = $this->relationUnifier->get($relationIdentifier);
+			$table = $relation->getTable();
 
-			$filters[] = Filter::make($relationIdentifier, $table, $column, $operator, $value);
+			$filter = $this->app->make('epi::manipulators.filter');
+			$filters[] = $filter->make($relationIdentifier, $table, $column, $operator, $value);
 		}
 
 		return $filters;

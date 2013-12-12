@@ -2,21 +2,18 @@
 
 use Vespakoen\Epi\Interfaces\Manipulators\LimiterInterface;
 
-class Limiter implements LimiterInterface {
+class Limiter extends Manipulator implements LimiterInterface {
 
 	public $skip;
 
 	public $take;
 
-	public function __construct($skip, $take)
+	public function make($skip = 0, $take = 25)
 	{
 		$this->skip = $skip;
 		$this->take = $take;
-	}
 
-	public static function make($skip = 0, $take = 25)
-	{
-		return new static($skip, $take);
+		return $this;
 	}
 
 	public function applyTo($query)

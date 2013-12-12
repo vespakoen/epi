@@ -2,15 +2,11 @@
 
 class Extractor {
 
-	public function __construct($safeTableName, array $config)
+	public function __construct($app)
 	{
-		$this->safeTableName = $safeTableName;
-		$this->config = $config;
-	}
-
-	public function getSafeAliasedTableName($relationIdentifier)
-	{
-		return $this->safeTableName->getForRelationIdentifier($relationIdentifier);
+		$this->app = $app;
+		$this->relationUnifier = $app['epi::helpers.relationunifier'];
+		$this->config = $app['config']['epi::epi'];
 	}
 
 	protected function extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn)
