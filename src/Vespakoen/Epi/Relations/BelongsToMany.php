@@ -37,19 +37,21 @@ class BelongsToMany extends Relation implements RelationInterface {
 
 	public function getTable()
 	{
-		return $this->getSecondTable();
+		return $this->getOtherSecondTable();
 	}
 
 	protected function getFirstTable()
 	{
-		$table = $this->parent->getTable();
+		$table = $this->relation->getParent()
+			->getTable();
 
 		return $table;
 	}
 
 	protected function getFirstColumn()
 	{
-		$table = $this->parent->getKeyName();
+		$table = $this->relation->getParent()
+			->getKeyName();
 
 		return $table;
 	}
