@@ -9,9 +9,11 @@ use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Manipulators\Sorter;
 use Vespakoen\Epi\Manipulators\Limiter;
 use Vespakoen\Epi\Manipulators\Join;
-use Vespakoen\Epi\Relations\HasMany;
 use Vespakoen\Epi\Relations\HasOne;
+use Vespakoen\Epi\Relations\HasMany;
+use Vespakoen\Epi\Relations\BelongsTo;
 use Vespakoen\Epi\Relations\BelongsToMany;
+use Vespakoen\Epi\Relations\MorphOne;
 use Vespakoen\Epi\Relations\MorphMany;
 use Vespakoen\Epi\Helpers\RelationUnifier;
 use Vespakoen\Epi\Helpers\SafeTableName;
@@ -109,14 +111,19 @@ class EpiServiceProvider extends ServiceProvider {
 			return new BelongsToMany($app);
 		});
 
+		$this->app->bind('epi::relations.hasone', function($app)
+		{
+			return new HasOne($app);
+		});
+
 		$this->app->bind('epi::relations.hasmany', function($app)
 		{
 			return new HasMany($app);
 		});
 
-		$this->app->bind('epi::relations.hasone', function($app)
+		$this->app->bind('epi::relations.morphone', function($app)
 		{
-			return new HasOne($app);
+			return new MorphOne($app);
 		});
 
 		$this->app->bind('epi::relations.morphmany', function($app)
