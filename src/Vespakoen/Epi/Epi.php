@@ -90,18 +90,15 @@ class Epi {
 
 	protected function getQuery()
 	{
+		$table = $this->getModel()
+			->getTable();
+
 		$query = $this->model->newInstance()
+			->distinct()
+			->select($table.'.*')
 			->with($this->eagerLoads);
 
 		$manipulators = $this->getManipulators();
-
-		// $debugManipulators = array();
-		// foreach($manipulators as $manipulator)
-		// {
-		// 	$debugManipulators[] = $manipulator->debug();
-		// }
-		// dd($debugManipulators);
-
 		foreach($manipulators as $manipulator)
 		{
 			$query = $manipulator->applyTo($query);
