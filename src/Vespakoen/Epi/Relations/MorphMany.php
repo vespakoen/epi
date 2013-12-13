@@ -39,11 +39,7 @@ class MorphMany extends Relation implements RelationInterface {
 
 	protected function getFirstTable()
 	{
-		// $firstTable = $this->parent
-		// 	->getTable();
-
-		$table = $this->relation
-			->getModel()
+		$table = $this->relation->getParent()
 			->getTable();
 
 		return $table;
