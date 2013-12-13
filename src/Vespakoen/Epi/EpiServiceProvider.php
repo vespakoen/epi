@@ -17,6 +17,7 @@ use Vespakoen\Epi\Relations\MorphOne;
 use Vespakoen\Epi\Relations\MorphMany;
 use Vespakoen\Epi\Helpers\RelationUnifier;
 use Vespakoen\Epi\Helpers\SafeTableName;
+use Vespakoen\Epi\Formats\Json;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -50,6 +51,7 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->registerExtractors();
 		$this->registerRelations();
 		$this->registerManipulators();
+		$this->registerFormats();
 		$this->registerEpi();
 	}
 
@@ -142,6 +144,14 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->singleton('epi::helpers.safetablename', function($app)
 		{
 			return new SafeTableName($app);
+		});
+	}
+
+	protected function registerFormats()
+	{
+		$this->app->bind('epi::formats.json', function($app)
+		{
+			return new Json($app);
 		});
 	}
 

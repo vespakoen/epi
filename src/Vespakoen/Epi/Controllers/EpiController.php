@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\App;
 
 class EpiController extends Controller {
 
@@ -59,12 +61,10 @@ class EpiController extends Controller {
 			$errors = $validator->messages()
 				->getMessages();
 
-			$response = Response::json(array(
+			return $this->respond(array(
 				'message' => 'Validation failed',
 				'errors' => $errors
 			), 422);
-
-			return $this->respond($response);
 		}
 
 		$model = $this->getModel();
@@ -89,11 +89,11 @@ class EpiController extends Controller {
 
 		if( ! $input = $this->getInput())
 		{
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'Problems reading input'
-			), 400);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 400);
 		}
 
 		$validator = $this->getStoreValidator($input);
@@ -102,21 +102,21 @@ class EpiController extends Controller {
 			$errors = $validator->messages()
 				->getMessages();
 
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'Validation failed',
 				'errors' => $errors
-			), 422);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 422);
 		}
 
 		if( ! $model = $this->model->create($input))
 		{
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'Something went wrong, please try it again later'
-			), 500);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 500);
 		}
 
 		$this->fire('after.store', array($model, $input));
@@ -139,11 +139,11 @@ class EpiController extends Controller {
 
 		if( ! $model)
 		{
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'The resource you are trying to update does not exist'
-			), 404);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 404);
 		}
 
 		$this->fire('after.show', array($id, $model));
@@ -164,20 +164,20 @@ class EpiController extends Controller {
 
 		if( ! $model)
 		{
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'The resource you are trying to update does not exist'
-			), 404);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 404);
 		}
 
 		if( ! $input = $this->getInput())
 		{
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'Problems reading input'
-			), 400);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 400);
 		}
 
 		$validator = $this->getUpdateValidator($input);
@@ -186,21 +186,21 @@ class EpiController extends Controller {
 			$errors = $validator->messages()
 				->getMessages();
 
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'Validation failed',
 				'errors' => $errors
-			), 422);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 422);
 		}
 
 		if( ! $model->fill($input)->save())
 		{
-			$response = Response::json(array(
+			$response = array(
 				'message' => 'Something went wrong, please try it again later'
-			), 500);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 500);
 		}
 
 		$this->fire('after.update', array($id, $model, $input));
@@ -221,18 +221,18 @@ class EpiController extends Controller {
 
 		if( ! $model)
 		{
-			$response = Response::json(array(
+			$response = array(
 				"message" => "The resource you are trying to delete does not exist"
-			), 404);
+			);
 
-			return $this->respond($response);
+			return $this->respond($response, 404);
 		}
 
 		$model->delete();
 
 		$this->fire('after.destroy', array($id, $model));
 
-		return Response::json(null, 204);
+		return $this->respond(null, 204);
 	}
 
 	protected function getInput()
@@ -293,30 +293,24 @@ class EpiController extends Controller {
 		Event::fire($event, $arguments);
 	}
 
-	/**
-	 * Helper for prettyprinting the response
-	 *
-	 * @param  result The eloquent collection or model
-	 * @return string The JSON
-	 */
-	protected function respond($result)
-	{
-		if(Input::has('prettyprint'))
-		{
-			if($result instanceof Model || $result instanceof Collection)
-			{
-				$result = $result->toArray();
-			}
-
-			$result = Response::make(json_encode($result, JSON_PRETTY_PRINT), 200, array('content-type' => 'application/json'));
-		}
-
-		return $result;
-	}
-
 	protected function getModel()
 	{
 		return $this->model;
+	}
+
+	protected function respond($result, $status = 200)
+	{
+		$responseConfig = Config::get('epi::epi.response');
+		$formatKey = Config::get('epi::epi.keys.format');
+
+		$formatName = array_get($this->getInput(), $formatKey, $responseConfig['default']);
+
+		$format = App::make('epi::formats.'.$formatName);
+
+		$result = $format->prepare($result);
+		$response = $format->respond($result, $status);
+
+		return $response;
 	}
 
 }
