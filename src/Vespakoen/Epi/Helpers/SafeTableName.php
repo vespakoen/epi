@@ -22,11 +22,11 @@ class SafeTableName {
 			$table = $customTable;
 		}
 
-		$count = count(explode('.', $relationIdentifier));
+		$count = count(explode('.', $relationIdentifier)) - 1;
 
-		if($referencesParent)
+		if( ! $referencesParent)
 		{
-			$count--;
+			$count++;
 		}
 
 		$prefix = str_repeat('safe_', $count);
