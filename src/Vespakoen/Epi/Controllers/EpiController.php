@@ -21,13 +21,6 @@ class EpiController extends Controller {
 	public $eagerLoad = array();
 
 	/**
-	 * $htore Path to hstore columns for filtering support
-	 *
-	 * @var array
-	 */
-	public $hstore = array();
-
-	/**
 	 * $indexRules Validation rules used when getting a list of resources
 	 *
 	 * @var array
@@ -48,11 +41,6 @@ class EpiController extends Controller {
 	 */
 	public $updateRules = array();
 
-	public function getInput()
-	{
-		return Input::all();
-	}
-
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -65,7 +53,7 @@ class EpiController extends Controller {
 		$input = $this->getInput();
 		$cleanInput = Epi::getCleanInput($input);
 
-		$validator = Validator::make($cleanInput, $this->indexRules);
+		$validator = $this->getIndexValidator($cleanInput);
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -99,7 +87,7 @@ class EpiController extends Controller {
 	{
 		$this->fire('before.store');
 
-		if( ! $input = Input::all())
+		if( ! $input = $this->getInput())
 		{
 			$response = Response::json(array(
 				'message' => 'Problems reading input'
@@ -108,7 +96,7 @@ class EpiController extends Controller {
 			return $this->respond($response);
 		}
 
-		$validator = Validator::make($input, $this->storeRules);
+		$validator = $this->getStoreValidator($input);
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -183,7 +171,7 @@ class EpiController extends Controller {
 			return $this->respond($response);
 		}
 
-		if( ! $input = Input::all())
+		if( ! $input = $this->getInput())
 		{
 			$response = Response::json(array(
 				'message' => 'Problems reading input'
@@ -192,7 +180,7 @@ class EpiController extends Controller {
 			return $this->respond($response);
 		}
 
-		$validator = Validator::make($input, $this->updateRules);
+		$validator = $this->getUpdateValidator($input);
 		if($validator->fails())
 		{
 			$errors = $validator->messages()
@@ -245,6 +233,47 @@ class EpiController extends Controller {
 		$this->fire('after.destroy', array($id, $model));
 
 		return Response::json(null, 204);
+	}
+
+	protected function getInput()
+	{
+		return Input::all();
+	}
+
+	protected function getIndexValidator($input)
+	{
+		$validator = Validator::make($input, $this->getIndexRules());
+
+		return $validator;
+	}
+
+	protected function getIndexRules()
+	{
+		return $this->indexRules;
+	}
+
+	protected function getStoreValidator($input)
+	{
+		$validator = Validator::make($input, $this->getStoreRules());
+
+		return $validator;
+	}
+
+	protected function getStoreRules()
+	{
+		return $this->storeRules;
+	}
+
+	protected function getUpdateValidator($input)
+	{
+		$validator = Validator::make($input, $this->getUpdateRules());
+
+		return $validator;
+	}
+
+	protected function getUpdateRules()
+	{
+		return $this->updateRules;
 	}
 
 	/**
