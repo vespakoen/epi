@@ -14,8 +14,6 @@ class RelationUnifierTest extends EpiTests {
 
 	public function testCanUnifyRelation()
 	{
-		$roles = $this->relationUnifier->get('roles');
-		dd($roles);
 	}
 
 }

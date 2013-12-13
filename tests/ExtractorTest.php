@@ -72,7 +72,8 @@ class ExtractorTest extends EpiTests {
 			)
 		);
 
-		$filter = end($this->filterExtractor->extract($input));
+		$filters = $this->filterExtractor->extract($input);
+		$filter = end($filters);
 
 		$this->assertEquals($filter->getRelationIdentifier(), null);
 
@@ -80,9 +81,9 @@ class ExtractorTest extends EpiTests {
 		$filter->applyTo($query);
 		list($tableAndColumn, $operator, $value) = $query->getResult();
 
-		$this->assertEquals($tableAndColumn, 'users.name');
-		$this->assertEquals($operator, '=');
-		$this->assertEquals($value, 'koen');
+		$this->assertEquals('safe_users.name', $tableAndColumn);
+		$this->assertEquals('=', $operator);
+		$this->assertEquals('koen', $value);
 	}
 
 	public function testCanExtractSorters()
@@ -93,7 +94,8 @@ class ExtractorTest extends EpiTests {
 			)
 		);
 
-		$sorter = end($this->sorterExtractor->extract($input));
+		$sorters = $this->sorterExtractor->extract($input);
+		$sorter = end($sorters);
 
 		$query = new Query();
 		$sorter->applyTo($query);
@@ -110,7 +112,8 @@ class ExtractorTest extends EpiTests {
 			'take' => 3
 		);
 
-		$limiter = end($this->limiterExtractor->extract($input));
+		$limiters = $this->limiterExtractor->extract($input);
+		$limiter = end($limiters);
 
 		$query = new Query();
 		$limiter->applyTo($query);
