@@ -26,7 +26,7 @@ class Filter extends Manipulator implements FilterInterface {
 	public function applyTo($query)
 	{
 		$table = $this->table;
-		$safeTable = $this->safe($table, true);
+		$safeTable = $this->safe($table);
 		$column = $this->column;
 		$operator = $this->operator;
 		$value = $this->value;

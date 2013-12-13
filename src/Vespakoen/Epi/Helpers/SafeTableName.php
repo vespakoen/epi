@@ -12,7 +12,7 @@ class SafeTableName {
 		$this->relationUnifier = $app['epi::helpers.relationunifier'];
 	}
 
-	public function getForRelationIdentifier($relationIdentifier, $customTable = null, $extraUnique = false)
+	public function getForRelationIdentifier($relationIdentifier, $customTable = null, $referencesParent = false)
 	{
 		$relation = $this->relationUnifier->get($relationIdentifier);
 
@@ -22,12 +22,11 @@ class SafeTableName {
 			$table = $customTable;
 		}
 
-		$count = count(explode('.', $relationIdentifier)) - 1;
+		$count = count(explode('.', $relationIdentifier));
 
-		$parentTable = null;
-		if($relation && $relation->parent && $relation->parent->getTable() == $table && $extraUnique)
+		if($referencesParent)
 		{
-			$count++;
+			$count--;
 		}
 
 		$prefix = str_repeat('safe_', $count);

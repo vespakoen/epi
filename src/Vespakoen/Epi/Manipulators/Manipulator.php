@@ -8,9 +8,9 @@ class Manipulator {
 		$this->safeTableName = $app['epi::helpers.safetablename'];
 	}
 
-	public function safe($customTable, $extraUnique = false)
+	public function safe($customTable, $referencesParent = false)
 	{
-		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $customTable, $extraUnique);
+		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $customTable, $referencesParent);
 	}
 
 	public function debug()

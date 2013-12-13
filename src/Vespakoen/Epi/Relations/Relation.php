@@ -8,9 +8,9 @@ class Relation {
 		$this->safeTableName = $app['epi::helpers.safetablename'];
 	}
 
-	protected function safe($table = null, $extraUnique = false)
+	protected function safe($table = null, $referencesParent = false)
 	{
-		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $table, $extraUnique);
+		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $table, $referencesParent);
 	}
 
 }

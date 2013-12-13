@@ -31,7 +31,7 @@ class BelongsToMany extends Relation implements RelationInterface {
 		$secondJoin = $this->app->make('epi::manipulators.join');
 		return array(
 			$firstJoin->make($relationIdentifier, $firstTable, $firstColumn, '=', $secondTable, $secondColumn),
-			$secondJoin->make($relationIdentifier, $otherFirstTable, $otherFirstColumn, '=', $otherSecondTable, $otherSecondColumn)
+			$secondJoin->make($relationIdentifier, 'safe_'.$otherFirstTable, $otherFirstColumn, '=', $otherSecondTable, $otherSecondColumn)
 		);
 	}
 

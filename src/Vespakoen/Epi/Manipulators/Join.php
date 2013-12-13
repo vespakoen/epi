@@ -31,11 +31,11 @@ class Join extends Manipulator implements JoinInterface {
 	public function applyTo($query)
 	{
 		$firstTable = $this->firstTable;
-		$safeFirstTable = $this->safe($firstTable);
+		$safeFirstTable = $this->safe($firstTable, true);
 		$firstColumn = $this->firstColumn;
 		$operator = $this->operator;
 		$secondTable = $this->secondTable;
-		$safeSecondTable = $this->safe($secondTable, true);
+		$safeSecondTable = $this->safe($secondTable);
 		$secondColumn = $this->secondColumn;
 
 		if($secondTable !== $safeSecondTable)
