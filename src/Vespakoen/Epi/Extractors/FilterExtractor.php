@@ -1,6 +1,8 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
 use Vespakoen\Epi\Interfaces\Extractors\FilterExtractorInterface;
+use Vespakoen\Epi\Relations\MorphMany;
+use Vespakoen\Epi\Relations\MorphOne;
 
 use Illuminate\Support\Str;
 
@@ -39,6 +41,18 @@ class FilterExtractor extends Extractor implements FilterExtractorInterface {
 
 			$filter = $this->app->make('epi::manipulators.filter');
 			$filters[] = $filter->make($relationIdentifier, $table, $column, $operator, $value);
+
+			if($relation instanceof MorphMany || $relation instanceof MorphOne)
+			{
+				$morphType = $relation->relation->getMorphType();
+				$parts = explode('.', $morphType);
+
+				$column = end($parts);
+				$value = get_class($relation->parent);
+
+				$filter = $this->app->make('epi::manipulators.filter');
+				$filters[] = $filter->make($relationIdentifier, $table, $column, '=', $value);
+			}
 		}
 
 		return $filters;
