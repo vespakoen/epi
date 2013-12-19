@@ -18,6 +18,7 @@ use Vespakoen\Epi\Relations\MorphMany;
 use Vespakoen\Epi\Helpers\RelationUnifier;
 use Vespakoen\Epi\Helpers\SafeTableName;
 use Vespakoen\Epi\Formats\Json;
+use Vespakoen\Epi\Commands\GenerateEpiControllerCommand;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -52,6 +53,7 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->registerRelations();
 		$this->registerManipulators();
 		$this->registerFormats();
+		$this->registerCommands();
 		$this->registerEpi();
 	}
 
@@ -161,6 +163,18 @@ class EpiServiceProvider extends ServiceProvider {
 		{
 			return new Epi($app['epi::extractors.filter'], $app['epi::extractors.sorter'], $app['epi::extractors.join'], $app['epi::extractors.limiter'], array());
 		});
+	}
+
+	protected function registerCommands()
+	{
+		$this->app->bind('epi::command.generate.epicontroller', function($app)
+		{
+			return new GenerateEpiControllerCommand;
+		});
+
+		$this->commands(
+			'epi::command.generate.epicontroller'
+		);
 	}
 
 	/**
