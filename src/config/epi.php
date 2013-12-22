@@ -17,6 +17,7 @@ return array(
 		'sort' => 'sort',
 		'skip' => 'skip',
 		'take' => 'take',
+		'eagerloads' => 'with',
 		'scopes' => 'scopes',
 		'format' => 'format'
 	),
