@@ -23,8 +23,7 @@ class SafeTableName {
 		}
 
 		$count = count(explode('.', $relationIdentifier)) - 1;
-
-		if( ! $referencesParent)
+		if($relationIdentifier && ! $referencesParent)
 		{
 			$count++;
 		}
