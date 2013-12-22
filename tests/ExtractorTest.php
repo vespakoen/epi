@@ -81,7 +81,7 @@ class ExtractorTest extends EpiTests {
 		$filter->applyTo($query);
 		list($tableAndColumn, $operator, $value) = $query->getResult();
 
-		$this->assertEquals('safe_users.name', $tableAndColumn);
+		$this->assertEquals('users.name', $tableAndColumn);
 		$this->assertEquals('=', $operator);
 		$this->assertEquals('koen', $value);
 	}
