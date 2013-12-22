@@ -1,9 +1,7 @@
 <?php namespace Vespakoen\Epi;
 
-use Vespakoen\Epi\Interfaces\Extractors\FilterExtractorInterface;
-use Vespakoen\Epi\Interfaces\Extractors\SorterExtractorInterface;
-use Vespakoen\Epi\Interfaces\Extractors\LimiterExtractorInterface;
-use Vespakoen\Epi\Interfaces\Extractors\JoinExtractorInterface;
+use Vespakoen\Epi\Collections\ExtractorCollection;
+use Vespakoen\Epi\Stores\ManipulatorStore;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -12,13 +10,9 @@ class Epi {
 
 	public $eagerLoads = array();
 
-	public function __construct(FilterExtractorInterface $filterExtractor, SorterExtractorInterface $sorterExtractor, JoinExtractorInterface $joinExtractor, LimiterExtractorInterface $limiterExtractor, $otherExtractors = array())
+	public function __construct(ExtractorCollection $extractors)
 	{
-		$this->filterExtractor = $filterExtractor;
-		$this->sorterExtractor = $sorterExtractor;
-		$this->limiterExtractor = $limiterExtractor;
-		$this->joinExtractor = $joinExtractor;
-		$this->otherExtractors = $otherExtractors;
+		$this->extractors = $extractors;
 	}
 
 	public function make(Model $model, array $input)
@@ -57,32 +51,18 @@ class Epi {
 
 	public function getCleanInput($input = array())
 	{
-		$operators = $this->filterExtractor->getOperators();
-
-		$clean = function($value) use ($operators)
-		{
-			foreach($operators as $operator)
-			{
-				$operatorLength = strlen($operator);
-				if(substr($value, 0, $operatorLength) == $operator)
-				{
-					$value = substr($value, strlen($operator));
-					break;
-				}
-			}
-
-			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
-			{
-				return trim($value, '%');
-			}
-
-			return $value;
-        };
+		$operators = $this->extractors->get('filters')
+			->getOperators();
 
 		$filters = array_get($input, 'filter', array());
 		foreach ($filters as $key => $value)
 		{
-			$input['filter'][$key] = $clean($value);
+			list($operator, $value) = $this->extractors->get('filters')
+				->extractOperatorAndValue($value);
+
+			$value = trim($value, '%');
+
+			$input['filter'][$key] = $value;
 		}
 
 		return $input;
@@ -109,19 +89,16 @@ class Epi {
 
 	protected function getManipulators()
 	{
-		$filters = $this->filterExtractor->extract($this->input);
-		$sorters = $this->sorterExtractor->extract($this->input);
-		$joins = $this->joinExtractor->extract($filters, $sorters);
-
-		$limiters = $this->limiterExtractor->extract($this->input);
-
-		$manipulators = array();
-		foreach($this->otherExtractors as $extractor)
+		$manipulatorStore = new ManipulatorStore();
+		foreach($this->extractors as $type => $extractor)
 		{
-			$manipulators += $extractor->extract($this->input);
+			$manipulators = $extractor->setManipulatorStore($manipulatorStore)
+				->extract($this->input);
+
+			$manipulatorStore->add($type, $manipulators);
 		}
 
-		return array_merge($joins, $filters, $sorters, $limiters, $manipulators);
+		return $manipulatorStore->all();
 	}
 
 }

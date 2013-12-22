@@ -2,11 +2,26 @@
 
 class Extractor {
 
+	protected $app;
+
+	protected $relationUnifier;
+
+	protected $config;
+
+	protected $manipulatorStore;
+
 	public function __construct($app)
 	{
 		$this->app = $app;
 		$this->relationUnifier = $app['epi::helpers.relationunifier'];
 		$this->config = $app['config']['epi::epi'];
+	}
+
+	public function setManipulatorStore($manipulatorStore)
+	{
+		$this->manipulatorStore = $manipulatorStore;
+
+		return $this;
 	}
 
 	protected function extractRelationIdentifierAndColumn($rawRelationIdentifierAndColumn)

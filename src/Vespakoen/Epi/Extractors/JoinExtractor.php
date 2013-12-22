@@ -6,9 +6,9 @@ use Illuminate\Support\Str;
 
 class JoinExtractor extends Extractor implements JoinExtractorInterface {
 
-	public function extract(array $filters, array $sorters)
+	public function extract(array $input)
 	{
-		$manipulators = array_merge($filters, $sorters);
+		$manipulators = $this->manipulatorStore->getManipulatorsForJoinExtractor();
 
 		$uniqueRelationIdentifiers = $this->getUniqueRelationIdentifiersForManipulators($manipulators);
 

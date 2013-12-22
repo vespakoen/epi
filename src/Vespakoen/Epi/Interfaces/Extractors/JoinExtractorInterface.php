@@ -2,13 +2,12 @@
 
 interface JoinExtractorInterface {
 
-	/**
-	 * Extracts sorter conditions from the given input
+/**
+	 * Extracts joins from sorters and filters
 	 *
-	 * @param  array of Epi\Manipulators\Filter
-	 * @param  array of Epi\Manipulators\Sorter
+	 * @param  array
 	 * @return array of Epi\Manipulators\Join
 	 */
-	public function extract(array $filters, array $sorters);
+	public function extract(array $input);
 
 }

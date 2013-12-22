@@ -1,7 +1,9 @@
 <?php namespace Vespakoen\Epi;
 
 use Vespakoen\Epi\Epi;
+use Vespakoen\Epi\Collections\ExtractorCollection;
 use Vespakoen\Epi\Extractors\FilterExtractor;
+use Vespakoen\Epi\Extractors\MorphFilterExtractor;
 use Vespakoen\Epi\Extractors\SorterExtractor;
 use Vespakoen\Epi\Extractors\LimiterExtractor;
 use Vespakoen\Epi\Extractors\JoinExtractor;
@@ -50,6 +52,7 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->registerHelpers();
 		$this->registerExtractors();
+		$this->registerExtractorCollection();
 		$this->registerRelations();
 		$this->registerManipulators();
 		$this->registerFormats();
@@ -62,6 +65,11 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->bind('epi::extractors.filter', function($app)
 		{
 			return new FilterExtractor($app);
+		});
+
+		$this->app->bind('epi::extractors.morphfilter', function($app)
+		{
+			return new MorphFilterExtractor($app);
 		});
 
 		$this->app->bind('epi::extractors.sorter', function($app)
@@ -77,6 +85,22 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->bind('epi::extractors.join', function($app)
 		{
 			return new JoinExtractor($app);
+		});
+	}
+
+	protected function registerExtractorCollection()
+	{
+		$this->app->bind('epi::extractors', function($app)
+		{
+			$extractors = array(
+				'filters' => $this->app->make('epi::extractors.filter'),
+				'morphfilters' => $this->app->make('epi::extractors.morphfilter'),
+				'sorters' => $this->app->make('epi::extractors.sorter'),
+				'limiters' => $this->app->make('epi::extractors.limiter'),
+				'joins' => $this->app->make('epi::extractors.join'),
+			);
+
+			return new ExtractorCollection($extractors);
 		});
 	}
 
@@ -161,7 +185,7 @@ class EpiServiceProvider extends ServiceProvider {
 	{
 		$this->app->singleton('epi::epi', function($app)
 		{
-			return new Epi($app['epi::extractors.filter'], $app['epi::extractors.sorter'], $app['epi::extractors.join'], $app['epi::extractors.limiter'], array());
+			return new Epi($app['epi::extractors']);
 		});
 	}
 
