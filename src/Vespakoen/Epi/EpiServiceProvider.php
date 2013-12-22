@@ -7,10 +7,12 @@ use Vespakoen\Epi\Extractors\MorphFilterExtractor;
 use Vespakoen\Epi\Extractors\SorterExtractor;
 use Vespakoen\Epi\Extractors\LimiterExtractor;
 use Vespakoen\Epi\Extractors\JoinExtractor;
+use Vespakoen\Epi\Extractors\ScopeExtractor;
 use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Manipulators\Sorter;
 use Vespakoen\Epi\Manipulators\Limiter;
 use Vespakoen\Epi\Manipulators\Join;
+use Vespakoen\Epi\Manipulators\Scope;
 use Vespakoen\Epi\Relations\HasOne;
 use Vespakoen\Epi\Relations\HasMany;
 use Vespakoen\Epi\Relations\BelongsTo;
@@ -86,6 +88,11 @@ class EpiServiceProvider extends ServiceProvider {
 		{
 			return new JoinExtractor($app);
 		});
+
+		$this->app->bind('epi::extractors.scope', function($app)
+		{
+			return new ScopeExtractor($app);
+		});
 	}
 
 	protected function registerExtractorCollection()
@@ -93,11 +100,12 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->bind('epi::extractors', function($app)
 		{
 			$extractors = array(
-				'filters' => $this->app->make('epi::extractors.filter'),
-				'morphfilters' => $this->app->make('epi::extractors.morphfilter'),
-				'sorters' => $this->app->make('epi::extractors.sorter'),
-				'limiters' => $this->app->make('epi::extractors.limiter'),
-				'joins' => $this->app->make('epi::extractors.join'),
+				'filters' => $app->make('epi::extractors.filter'),
+				'morphfilters' => $app->make('epi::extractors.morphfilter'),
+				'sorters' => $app->make('epi::extractors.sorter'),
+				'limiters' => $app->make('epi::extractors.limiter'),
+				'joins' => $app->make('epi::extractors.join'),
+				'scopes' => $app->make('epi::extractors.scope'),
 			);
 
 			return new ExtractorCollection($extractors);
@@ -124,6 +132,11 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->bind('epi::manipulators.sorter', function($app)
 		{
 			return new Sorter($app);
+		});
+
+		$this->app->bind('epi::manipulators.scope', function($app)
+		{
+			return new Scope($app);
 		});
 	}
 

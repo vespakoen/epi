@@ -13,4 +13,15 @@ class Relation {
 		return $this->safeTableName->getForRelationIdentifier($this->relationIdentifier, $table, $referencesParent);
 	}
 
+	public function getModel()
+	{
+		return $this->getRelation()
+			->getModel();
+	}
+
+	public function getRelation()
+	{
+		return $this->relation;
+	}
+
 }

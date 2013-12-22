@@ -17,6 +17,7 @@ return array(
 		'sort' => 'sort',
 		'skip' => 'skip',
 		'take' => 'take',
+		'scopes' => 'scopes',
 		'format' => 'format'
 	),
 
