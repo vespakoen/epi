@@ -1,6 +1,5 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
-use Vespakoen\Epi\Facades\Limiter;
 use Vespakoen\Epi\Interfaces\Extractors\LimiterExtractorInterface;
 
 class LimiterExtractor extends Extractor implements LimiterExtractorInterface {

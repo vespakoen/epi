@@ -1,6 +1,5 @@
 <?php namespace Vespakoen\Epi\Extractors;
 
-use Vespakoen\Epi\Facades\Sorter;
 use Vespakoen\Epi\Interfaces\Extractors\SorterExtractorInterface;
 
 class SorterExtractor extends Extractor implements SorterExtractorInterface {
