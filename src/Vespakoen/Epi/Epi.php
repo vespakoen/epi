@@ -4,6 +4,7 @@ use Vespakoen\Epi\Collections\ExtractorCollection;
 use Vespakoen\Epi\Stores\ManipulatorStore;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class Epi {
@@ -28,13 +29,6 @@ class Epi {
 		return $this->model;
 	}
 
-	public function setEagerLoads($eagerLoads)
-	{
-		$this->eagerLoads = $eagerLoads;
-
-		return $this;
-	}
-
 	public function get()
 	{
 		$query = $this->getQuery();
@@ -47,6 +41,22 @@ class Epi {
 		$query = $this->getQuery();
 
 		return $query->first();
+	}
+
+	public function addInput($key, $value)
+	{
+		$key = Config::get('epi::epi.keys.'.$key);
+
+		if(array_key_exists($key, $this->input))
+		{
+			$this->input[$key] = array_merge($this->input[$key], $value);
+		}
+		else
+		{
+			$this->input[$key] = $value;
+		}
+
+		return $this;
 	}
 
 	public function getCleanInput($input = array())
