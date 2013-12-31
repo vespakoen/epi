@@ -14,6 +14,8 @@ class ApiException extends Exception
 	 */
 	protected $result;
 
+	protected $errors = array();
+
 	/**
 	 * Make a new API Exception with the given result.
 	 *
@@ -22,6 +24,11 @@ class ApiException extends Exception
 	public function __construct($result, $code)
 	{
 		$this->result = $result;
+
+		if(array_key_exists('errors', $this->result))
+		{
+			$this->errors = $this->result['errors'];
+		}
 
 		if (isset($result->message))
 		{
@@ -36,9 +43,19 @@ class ApiException extends Exception
 	}
 
 	/**
-	 * Return the associated result object returned by the API server.
+	 * Get the errors returned by the API server.
 	 *
-	 * @return array The result from the API server
+	 * @return array
+	 */
+	public function getErrors()
+	{
+		return $this->errors;
+	}
+
+	/**
+	 * Get the result object returned by the API server.
+	 *
+	 * @return array
 	 */
 	public function getResult()
 	{
