@@ -10,12 +10,14 @@ use Vespakoen\Epi\Extractors\SorterExtractor;
 use Vespakoen\Epi\Extractors\LimiterExtractor;
 use Vespakoen\Epi\Extractors\JoinExtractor;
 use Vespakoen\Epi\Extractors\ScopeExtractor;
+use Vespakoen\Epi\Extractors\EagerloadExtractor;
 
 use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Manipulators\Sorter;
 use Vespakoen\Epi\Manipulators\Limiter;
 use Vespakoen\Epi\Manipulators\Join;
 use Vespakoen\Epi\Manipulators\Scope;
+use Vespakoen\Epi\Manipulators\Eagerload;
 
 use Vespakoen\Epi\Relations\HasOne;
 use Vespakoen\Epi\Relations\HasMany;
@@ -103,6 +105,11 @@ class EpiServiceProvider extends ServiceProvider {
 		{
 			return new ScopeExtractor($app);
 		});
+
+		$this->app->bind('epi::extractors.eagerload', function($app)
+		{
+			return new EagerloadExtractor($app);
+		});
 	}
 
 	protected function registerExtractorCollection()
@@ -116,6 +123,7 @@ class EpiServiceProvider extends ServiceProvider {
 				'limiters' => $app->make('epi::extractors.limiter'),
 				'joins' => $app->make('epi::extractors.join'),
 				'scopes' => $app->make('epi::extractors.scope'),
+				'eagerloads' => $app->make('epi::extractors.eagerload'),
 			);
 
 			return new ExtractorCollection($extractors);
@@ -147,6 +155,11 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->bind('epi::manipulators.scope', function($app)
 		{
 			return new Scope($app);
+		});
+
+		$this->app->bind('epi::manipulators.eagerload', function($app)
+		{
+			return new Eagerload($app);
 		});
 	}
 
