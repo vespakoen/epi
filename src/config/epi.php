@@ -17,16 +17,15 @@ return array(
 		'sort' => 'sort',
 		'skip' => 'skip',
 		'take' => 'take',
+		'with' => 'with',
 		'scopes' => 'scopes',
-		'format' => 'format'
+		'format' => 'format',
+		'response' => 'response',
+		'adaptor' => 'adaptor'
 	),
 
-	'response' => array(
-		'default' => 'json',
+	'format' => 'json',
 
-		'formats' => array(
-			'json'
-		)
-	)
+	'adaptor' => false
 
 );
