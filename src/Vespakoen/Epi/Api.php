@@ -54,15 +54,6 @@ class Api {
 	 */
 	protected $input;
 
-	/**
-	 * All of the available clause operators.
-	 *
-	 * @var array
-	 */
-	protected $operators = array(
-		'<=', '>=', '<>', '!=', '=', '<', '>'
-	);
-
 	public function __construct($resource)
 	{
 		$this->resource = $resource;
@@ -85,15 +76,12 @@ class Api {
 	 */
 	public function where($column, $operator = null, $value = null)
 	{
-		// If the given operator is not found in the list of valid operators we will
-		// assume that the developer is just short-cutting the '=' operators and
-		// we will set the operators to '=' and set the values appropriately.
-		if ( ! in_array(strtolower($operator), $this->operators, true))
+		if( ! is_null($operator) && strtolower($operator) !== 'like')
 		{
-			list($value, $operator) = array($operator, '=');
+			$value = $operator.$value;
 		}
 
-		$this->wheres[] = compact('column', 'operator', 'value');
+		$this->wheres[] = compact('column', 'value');
 
 		return $this;
 	}
@@ -204,7 +192,7 @@ class Api {
 		{
 			foreach ($this->wheres as $where)
 			{
-				$input['filter'][$where['column']] = $where['operator'].$where['value'];
+				$input['filter'][$where['column']] = $where['value'];
 			}
 		}
 
