@@ -1,27 +1,36 @@
 <?php namespace Vespakoen\Epi;
 
 use Vespakoen\Epi\Epi;
+
 use Vespakoen\Epi\Collections\ExtractorCollection;
+
 use Vespakoen\Epi\Extractors\FilterExtractor;
 use Vespakoen\Epi\Extractors\MorphFilterExtractor;
 use Vespakoen\Epi\Extractors\SorterExtractor;
 use Vespakoen\Epi\Extractors\LimiterExtractor;
 use Vespakoen\Epi\Extractors\JoinExtractor;
 use Vespakoen\Epi\Extractors\ScopeExtractor;
+
 use Vespakoen\Epi\Manipulators\Filter;
 use Vespakoen\Epi\Manipulators\Sorter;
 use Vespakoen\Epi\Manipulators\Limiter;
 use Vespakoen\Epi\Manipulators\Join;
 use Vespakoen\Epi\Manipulators\Scope;
+
 use Vespakoen\Epi\Relations\HasOne;
 use Vespakoen\Epi\Relations\HasMany;
 use Vespakoen\Epi\Relations\BelongsTo;
 use Vespakoen\Epi\Relations\BelongsToMany;
 use Vespakoen\Epi\Relations\MorphOne;
 use Vespakoen\Epi\Relations\MorphMany;
+
 use Vespakoen\Epi\Helpers\RelationUnifier;
 use Vespakoen\Epi\Helpers\SafeTableName;
+
 use Vespakoen\Epi\Formats\Json;
+
+use Vespakoen\Epi\Adaptors\Ember;
+
 use Vespakoen\Epi\Commands\GenerateEpiControllerCommand;
 
 use Illuminate\Support\ServiceProvider;
@@ -57,6 +66,7 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->registerExtractorCollection();
 		$this->registerRelations();
 		$this->registerManipulators();
+		$this->registerAdaptors();
 		$this->registerFormats();
 		$this->registerCommands();
 		$this->registerEpi();
@@ -183,6 +193,14 @@ class EpiServiceProvider extends ServiceProvider {
 		$this->app->singleton('epi::helpers.safetablename', function($app)
 		{
 			return new SafeTableName($app);
+		});
+	}
+
+	protected function registerAdaptors()
+	{
+		$this->app->bind('epi::adaptors.ember', function($app)
+		{
+			return new Ember($app);
 		});
 	}
 
