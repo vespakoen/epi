@@ -42,9 +42,10 @@ class GenerateEpiControllerCommand extends Command {
         $baseControllerName = $this->getObjectName($baseController);
         $model = $this->argument('model');
         $modelName = $this->getObjectName($model);
+        $modelNamespace = $this->option('model-namespace') ? $this->option('model-namespace').'\\' : '';
         $namespace = $this->getNamespace();
 
-        $options = compact('controller', 'controllerName', 'baseController', 'baseControllerName', 'model', 'modelName', 'namespace');
+        $options = compact('controller', 'controllerName', 'baseController', 'baseControllerName', 'model', 'modelName', 'modelNamespace', 'namespace');
 
         $contents = $this->getTemplate($template, $options);
 
@@ -181,6 +182,7 @@ class GenerateEpiControllerCommand extends Command {
            array('bench', null, InputOption::VALUE_OPTIONAL, 'The name of the workbench to put the controller', null),
            array('package', null, InputOption::VALUE_OPTIONAL, 'The name of the package to put the controller.', null),
            array('path', null, InputOption::VALUE_OPTIONAL, 'The path to put the controller (relative to app/ or, if given, the package/workbench\'s src/Vendor/Package/ path)', 'controllers/api'),
+           array('model-namespace', null, InputOption::VALUE_OPTIONAL, 'The namespace of the model', ''),
            array('template', null, InputOption::VALUE_OPTIONAL, 'The path to the template to use for generating the controller', __DIR__.'/../../../stubs/EpiController.php'),
            array('base-controller', null, InputOption::VALUE_OPTIONAL, 'The namespace of the base controller to use.', 'Vespakoen\Epi\Controllers\EpiController'),
         );
