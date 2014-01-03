@@ -70,7 +70,10 @@ class Epi {
 			list($operator, $value) = $this->extractors->get('filters')
 				->extractOperatorAndValue($value);
 
-			$value = trim($value, '%');
+			if(is_string($value))
+			{
+				$value = trim($value, '%');
+			}
 
 			$input['filter'][$key] = $value;
 		}

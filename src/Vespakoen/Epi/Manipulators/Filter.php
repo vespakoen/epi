@@ -31,6 +31,11 @@ class Filter extends Manipulator implements FilterInterface {
 		$operator = $this->operator;
 		$value = $this->value;
 
+		if($operator == 'IN')
+		{
+			return $query->whereIn($safeTable.'.'.$column, $value);
+		}
+
 		return $query->where($safeTable.'.'.$column, $operator, $value);
 	}
 
