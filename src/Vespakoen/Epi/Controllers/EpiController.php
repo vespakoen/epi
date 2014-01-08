@@ -56,6 +56,13 @@ class EpiController extends Controller {
 	protected $with = array();
 
 	/**
+	 * Validation rules used for all actions
+	 *
+	 * @var array
+	 */
+	protected $rules = array();
+
+	/**
 	 * Validation rules used when getting a list of resources
 	 *
 	 * @var array

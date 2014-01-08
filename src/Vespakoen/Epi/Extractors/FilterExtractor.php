@@ -53,19 +53,26 @@ class FilterExtractor extends Extractor implements FilterExtractorInterface {
 	{
 		$matchedOperator = '=';
 
-		foreach($this->operators as $operator)
+		if(is_array($value))
 		{
-			if(Str::startsWith($value, $operator))
-			{
-				$matchedOperator = $operator;
-				$value = substr($value, strlen($operator));
-				break;
-			}
+			$matchedOperator = 'IN';
 		}
-
-		if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+		else
 		{
-			$matchedOperator = 'LIKE';
+			foreach($this->operators as $operator)
+			{
+				if(Str::startsWith($value, $operator))
+				{
+					$matchedOperator = $operator;
+					$value = substr($value, strlen($operator));
+					break;
+				}
+			}
+
+			if(Str::startsWith($value, '%') || Str::endsWith($value, '%'))
+			{
+				$matchedOperator = 'LIKE';
+			}
 		}
 
 		return array(
