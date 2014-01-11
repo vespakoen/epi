@@ -22,7 +22,9 @@ class Sorter extends Manipulator implements SorterInterface {
 
 	public function applyTo($query)
 	{
-		return $query->orderBy($this->table.'.'.$this->column, $this->direction);
+		$safeTable = $this->safe($this->table);
+
+		return $query->orderBy($safeTable.'.'.$this->column, $this->direction);
 	}
 
 	public function getRelationIdentifier()
