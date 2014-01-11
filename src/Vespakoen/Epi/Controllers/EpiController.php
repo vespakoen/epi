@@ -93,7 +93,7 @@ class EpiController extends Controller {
 	/**
 	 * Input to filter out in the index method
 	 *
-	 * @var array
+	 * @var array|null
 	 */
 	protected $indexInputFilter = array(
 		'filter',
@@ -109,7 +109,14 @@ class EpiController extends Controller {
 	/**
 	 * Input to filter out in the show method
 	 *
-	 * @var array
+	 * @var array|null
+	 */
+	protected $storeInputFilter;
+
+	/**
+	 * Input to filter out in the show method
+	 *
+	 * @var array|null
 	 */
 	protected $showInputFilter = array(
 		'with',
@@ -117,6 +124,13 @@ class EpiController extends Controller {
 		'format',
 		'response'
 	);
+
+	/**
+	 * Input to filter out in the show method
+	 *
+	 * @var array|null
+	 */
+	protected $updateInputFilter;
 
 	/**
 	 * Display a listing of the resource.
@@ -160,7 +174,7 @@ class EpiController extends Controller {
 	{
 		$this->fire('before.store');
 
-		if( ! $input = $this->getInput())
+		if( ! $input = $this->getInput($this->storeInputFilter))
 		{
 			$response = array(
 				'message' => 'Problems reading input'
@@ -262,7 +276,7 @@ class EpiController extends Controller {
 			return $this->respond($response, 404);
 		}
 
-		if( ! $input = $this->getInput())
+		if( ! $input = $this->getInput($this->updateInputFilter))
 		{
 			$response = array(
 				'message' => 'Problems reading input'
