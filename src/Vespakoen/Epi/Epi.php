@@ -9,8 +9,6 @@ use Illuminate\Support\Str;
 
 class Epi {
 
-	public $eagerLoads = array();
-
 	public function __construct(ExtractorCollection $extractors)
 	{
 		$this->extractors = $extractors;
@@ -81,6 +79,11 @@ class Epi {
 		return $input;
 	}
 
+	public function getInput()
+	{
+		return $this->input;
+	}
+
 	protected function getQuery()
 	{
 		$table = $this->getModel()
@@ -88,8 +91,7 @@ class Epi {
 
 		$query = $this->model->newInstance()
 			->distinct()
-			->select($table.'.*')
-			->with($this->eagerLoads);
+			->select($table.'.*');
 
 		$manipulators = $this->getManipulators();
 		foreach($manipulators as $manipulator)
