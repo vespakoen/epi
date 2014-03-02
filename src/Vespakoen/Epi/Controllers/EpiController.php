@@ -593,4 +593,20 @@ class EpiController extends Controller {
 		Event::fire($event, $arguments);
 	}
 
+	public function on($event, $callbacks)
+	{
+		return Event::listen($event, $callbacks);
+	}
+
+	/**
+	 * Abuse the setupLayout method to call our own before method
+	 *
+	 * @return void
+	 */
+	protected function setupLayout() {
+		$this->before();
+	}
+
+	protected function before() {}
+
 }
