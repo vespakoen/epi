@@ -7,7 +7,7 @@ class EagerloadExtractor extends Extractor implements EagerloadExtractorInterfac
     public function extract(array $input)
     {
         // where in the input should we look?
-        $key = $this->config['keys']['eagerloads'];
+        $key = $this->config['keys']['with'];
 
         // is there a sort at all?
         if( ! array_key_exists($key, $input))
